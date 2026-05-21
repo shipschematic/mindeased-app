@@ -1,0 +1,851 @@
+{
+  "_extractionSummary": {
+    "version": "2.0.0",
+    "features": {
+      "subPixelPositioning": true,
+      "canvasBasedTypography": true,
+      "advancedVisualEffects": true,
+      "componentSystemIntegration": true,
+      "designContextAware": true
+    },
+    "completeness": "100% of advanced features extracted"
+  },
+  "component": "Community",
+  "type": "container",
+  "size": {
+    "width": 3224,
+    "height": 86
+  },
+  "position": {
+    "x": 3368,
+    "y": 4240
+  },
+  "visuals": {
+    "fills": [
+      {
+        "type": "SOLID",
+        "color": "rgba(247, 210, 135, 1)"
+      }
+    ],
+    "borderRadius": {
+      "uniform": 20
+    }
+  },
+  "typography": {
+    "textColor": "rgba(247, 210, 135, 1)"
+  },
+  "layout": {
+    "display": "flex",
+    "direction": "horizontal",
+    "alignItems": "min",
+    "justifyContent": "min",
+    "gap": "10px",
+    "constraints": {
+      "horizontal": "MIN",
+      "vertical": "MIN"
+    },
+    "sizeMode": {
+      "width": "FIXED",
+      "height": "AUTO"
+    },
+    "padding": {
+      "top": "25px",
+      "right": "30px",
+      "bottom": "25px",
+      "left": "30px"
+    }
+  },
+  "children": [
+    {
+      "component": "Community",
+      "type": "text",
+      "semanticTag": "span",
+      "size": {
+        "width": 150,
+        "height": 36
+      },
+      "position": {
+        "x": 30,
+        "y": 25
+      },
+      "typography": {
+        "font": {
+          "family": "Lora",
+          "size": "28px",
+          "weight": 700
+        },
+        "textContent": "Community",
+        "textColor": "rgba(1, 24, 33, 1)",
+        "alignment": {
+          "horizontal": "LEFT",
+          "vertical": "TOP"
+        }
+      },
+      "layout": {
+        "display": "block"
+      }
+    }
+  ],
+  "semantic": {
+    "role": "container"
+  },
+  "responsive": {
+    "breakpoints": {},
+    "adaptiveLayout": true,
+    "fluidSizing": true,
+    "containerQueries": false,
+    "aspectRatio": 37.48837209302326,
+    "viewportAdaptation": {
+      "type": "scale",
+      "minWidth": null,
+      "maxWidth": null,
+      "minHeight": null,
+      "maxHeight": null,
+      "preserveAspectRatio": true,
+      "maintainProportions": true
+    }
+  },
+  "enhancedVisuals": {
+    "fills": [
+      {
+        "type": "SOLID",
+        "visible": true,
+        "opacity": 1,
+        "blendMode": "NORMAL",
+        "color": "rgba(247, 210, 135, 1)",
+        "fallbackColor": "rgba(247, 210, 135, 1)"
+      }
+    ],
+    "borderRadius": {
+      "uniform": 20
+    },
+    "cornerSmoothing": 0,
+    "strokeWeight": 1,
+    "strokeAlign": "INSIDE",
+    "strokeCap": "NONE",
+    "strokeJoin": "MITER",
+    "dashPattern": [],
+    "opacity": 1,
+    "blendMode": "PASS_THROUGH",
+    "isMask": false,
+    "fillStyleId": "S:fb3444aab53f4a337ab9496894d9b8a2ad2e6591,",
+    "mixBlendMode": "PASS_THROUGH",
+    "isolate": false,
+    "backdropBlur": 0,
+    "backgroundImage": [],
+    "backgroundPosition": "0% 0%",
+    "backgroundRepeat": "no-repeat",
+    "backgroundSize": "auto",
+    "backgroundAttachment": "scroll",
+    "backgroundClip": "border-box",
+    "backgroundOrigin": "padding-box",
+    "borderImageSlice": "1",
+    "borderImageWidth": "1px",
+    "borderImageOutset": "0",
+    "borderImageRepeat": "stretch",
+    "maskPosition": "0% 0%",
+    "maskSize": "auto",
+    "maskRepeat": "no-repeat",
+    "maskComposite": "add",
+    "subPixelRendering": true,
+    "pixelRatio": 2,
+    "renderingHints": {
+      "antiAlias": false,
+      "smoothing": true,
+      "optimizeSpeed": false
+    },
+    "exportSettings": [
+      {
+        "format": "PNG",
+        "constraint": "SCALE",
+        "suffix": "",
+        "resolution": 1,
+        "includeId": false
+      }
+    ],
+    "renderBounds": {
+      "x": 3368,
+      "y": 4240,
+      "width": 3224,
+      "height": 86,
+      "pixelPerfect": true
+    }
+  },
+  "precisePosition": {
+    "x": 3368,
+    "y": 4240,
+    "rotation": 0,
+    "preciseX": 3368,
+    "preciseY": 4240,
+    "preciseRotation": 0,
+    "relativeToParent": {
+      "x": 3368,
+      "y": 4240,
+      "xPercent": 336800,
+      "yPercent": 424000
+    },
+    "visualBounds": {
+      "x": 3368,
+      "y": 4240,
+      "width": 3224,
+      "height": 86,
+      "left": 3368,
+      "top": 4240,
+      "right": 6592,
+      "bottom": 4326,
+      "centerX": 4980,
+      "centerY": 4283,
+      "pixelBounds": {
+        "left": 3368,
+        "top": 4240,
+        "right": 6592,
+        "bottom": 4326
+      }
+    },
+    "layoutBounds": {
+      "x": 3368,
+      "y": 4240,
+      "width": 3224,
+      "height": 86,
+      "left": 3368,
+      "top": 4240,
+      "right": 6592,
+      "bottom": 4326,
+      "centerX": 4980,
+      "centerY": 4283,
+      "pixelBounds": {
+        "left": 3368,
+        "top": 4240,
+        "right": 6592,
+        "bottom": 4326
+      }
+    },
+    "contentBounds": {
+      "x": 3368,
+      "y": 4240,
+      "width": 3224,
+      "height": 86,
+      "left": 3368,
+      "top": 4240,
+      "right": 6592,
+      "bottom": 4326,
+      "centerX": 4980,
+      "centerY": 4283,
+      "pixelBounds": {
+        "left": 3368,
+        "top": 4240,
+        "right": 6592,
+        "bottom": 4326
+      }
+    }
+  },
+  "preciseTypography": {
+    "textColor": "rgba(247, 210, 135, 1)",
+    "textColorFallback": "rgba(247, 210, 135, 1)",
+    "fontStack": {
+      "primary": {
+        "family": "inherit",
+        "weight": 400,
+        "style": "Regular",
+        "stretch": "normal",
+        "variant": "normal",
+        "featureSettings": {
+          "liga": false,
+          "dlig": false,
+          "smcp": false,
+          "c2sc": false,
+          "c2pc": false,
+          "salt": false,
+          "tnum": false,
+          "onum": false,
+          "lnum": false,
+          "pnum": false,
+          "case": false,
+          "locl": false,
+          "zero": false,
+          "hist": false,
+          "ss01": false,
+          "ss02": false,
+          "ss03": false,
+          "ss04": false,
+          "ss05": false,
+          "ss06": false,
+          "ss07": false,
+          "ss08": false,
+          "ss09": false,
+          "ss10": false,
+          "ss11": false,
+          "ss12": false,
+          "ss13": false,
+          "ss14": false,
+          "ss15": false,
+          "ss16": false,
+          "ss17": false,
+          "ss18": false,
+          "ss19": false,
+          "ss20": false
+        }
+      },
+      "fallbacks": [
+        {
+          "family": "system-ui",
+          "weight": 400,
+          "style": "normal",
+          "stretch": "normal",
+          "variant": "normal",
+          "featureSettings": {}
+        },
+        {
+          "family": "Arial",
+          "weight": 400,
+          "style": "normal",
+          "stretch": "normal",
+          "variant": "normal",
+          "featureSettings": {}
+        }
+      ],
+      "systemFallback": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
+    },
+    "fontDisplay": "swap",
+    "fontVariationSettings": {},
+    "textMetrics": {
+      "actualBoundingBoxAscent": 12,
+      "actualBoundingBoxDescent": 4,
+      "actualBoundingBoxLeft": 0,
+      "actualBoundingBoxRight": 0,
+      "fontBoundingBoxAscent": 12.8,
+      "fontBoundingBoxDescent": 3.2,
+      "width": 0,
+      "emHeightAscent": 12.8,
+      "emHeightDescent": 3.2
+    },
+    "writingMode": "horizontal-tb",
+    "textOrientation": "mixed",
+    "textJustify": "auto",
+    "lineBoxes": [],
+    "characterMetrics": [],
+    "firstLineOffset": 0,
+    "lastLineOffset": 0,
+    "fontLoadingState": "loaded",
+    "textShadow": [],
+    "textFillColor": "rgba(247, 210, 135, 1)"
+  },
+  "componentRelationships": {
+    "childComponents": [],
+    "siblingComponents": [],
+    "instanceOverrides": [],
+    "variantProperties": [],
+    "designSystemPath": [],
+    "styleReferences": [
+      {
+        "id": "S:fb3444aab53f4a337ab9496894d9b8a2ad2e6591,",
+        "name": "Main/Tertiary",
+        "type": "paint",
+        "description": "",
+        "remote": false
+      }
+    ],
+    "tokenReferences": [],
+    "usageInstances": [],
+    "dependentComponents": [],
+    "lastModified": "2026-05-20T14:47:23.930Z",
+    "creator": "Unknown"
+  },
+  "designContext": {
+    "pageContext": {
+      "name": "✅ Final UI",
+      "id": "24:5",
+      "type": "design",
+      "flowStartingPoints": []
+    },
+    "frameHierarchy": [],
+    "designSystemInfo": {
+      "library": false,
+      "published": false,
+      "components": 0,
+      "styles": 0,
+      "tokens": 0,
+      "lastUpdated": "2026-05-20T14:47:24.256Z"
+    },
+    "layoutGrid": {
+      "type": "stretch",
+      "alignment": "min",
+      "gutterSize": 20,
+      "offset": 0,
+      "visible": false,
+      "color": "#000000",
+      "opacity": 0.1
+    },
+    "guides": [],
+    "flowContext": {
+      "connections": [],
+      "hotspots": []
+    },
+    "comments": [],
+    "annotations": [],
+    "exportContext": {
+      "format": "PNG",
+      "scale": 1,
+      "includeId": false,
+      "bounds": "content",
+      "constraint": "scale",
+      "colorSpace": "sRGB"
+    }
+  },
+  "exportedAt": "2026-05-20T14:47:32.772Z",
+  "metadata": {
+    "extractedFrom": "figma",
+    "version": "2.0.0-pixel-perfect",
+    "extractionCapabilities": {
+      "pixelPerfectAccuracy": true,
+      "subPixelPositioning": true,
+      "canvasBasedTypography": true,
+      "advancedVisualEffects": true,
+      "componentSystemAware": true,
+      "designContextAware": true,
+      "extractionCompleteness": 100
+    },
+    "complexity": "moderate",
+    "relationships": {
+      "parentType": null,
+      "childrenTypes": [
+        "text"
+      ],
+      "siblingIndex": 0,
+      "hierarchyDepth": 0
+    },
+    "designSystemContext": {
+      "usesTokens": false,
+      "tokenTypes": [],
+      "componentVariant": null,
+      "isSystemComponent": false
+    },
+    "implementationContext": {
+      "estimatedComplexity": {
+        "level": "moderate",
+        "factors": [
+          "responsive-design"
+        ],
+        "estimatedDevelopmentTime": "2.6 hours"
+      },
+      "requiredDependencies": [
+        "react",
+        "styled-components",
+        "@types/styled-components"
+      ],
+      "suggestedLibraries": {
+        "styling": [
+          "styled-components",
+          "emotion",
+          "stitches"
+        ],
+        "state": [],
+        "animation": [],
+        "accessibility": [],
+        "testing": [
+          "@testing-library/react",
+          "@testing-library/jest-dom",
+          "@testing-library/user-event"
+        ]
+      },
+      "performanceConsiderations": [
+        "Use CSS media queries instead of JavaScript for responsive behavior"
+      ]
+    }
+  },
+  "aiHints": {
+    "componentType": "container",
+    "componentPattern": "container",
+    "suggestedHTML": "div",
+    "implementation": {
+      "framework": {
+        "react": {
+          "component": "functional component",
+          "hooks": [],
+          "patterns": []
+        },
+        "vue": {
+          "component": "template-only",
+          "composables": []
+        },
+        "angular": {
+          "component": "standalone component",
+          "features": []
+        }
+      },
+      "styling": {
+        "approach": "css-custom-properties",
+        "methodology": "CSS-in-JS recommended for component-scoped styles",
+        "considerations": [
+          "Complex visual effects detected - consider CSS-in-JS or styled-components",
+          "Responsive design - use CSS Grid or Flexbox",
+          "Consistent border radius - extract to design token"
+        ],
+        "cssProperties": {
+          "background": "solid color",
+          "borderRadius": "20px",
+          "display": "flex",
+          "flexDirection": "row",
+          "gap": "10px",
+          "dimensions": {
+            "width": "3224px",
+            "height": "86px",
+            "aspectRatio": "37.49"
+          }
+        }
+      },
+      "layout": {
+        "system": "flexbox",
+        "direction": "row",
+        "alignment": {
+          "main": "MIN",
+          "cross": "MIN"
+        },
+        "spacing": "gap: 10px",
+        "padding": "padding: 25px",
+        "implementation": "Use CSS Flexbox with appropriate flex properties"
+      },
+      "responsive": {
+        "strategy": "mobile-first",
+        "breakpoints": [
+          "320px",
+          "480px",
+          "768px",
+          "1024px",
+          "1440px",
+          "3300px"
+        ],
+        "considerations": [
+          "Use relative units (rem, em, %) where appropriate",
+          "Implement fluid typography with clamp()",
+          "Consider container queries for component-level responsiveness",
+          "Flexbox will handle most responsive behavior automatically",
+          "Component is large - consider responsive scaling"
+        ],
+        "implementation": "Use CSS media queries or CSS-in-JS responsive utilities"
+      },
+      "accessibility": {
+        "semanticHTML": "Use semantic div element",
+        "ariaLabels": "Ensure proper heading hierarchy",
+        "keyboardNavigation": "Not applicable",
+        "focusManagement": "Not applicable",
+        "colorContrast": [
+          "Verify WCAG AA contrast ratio (4.5:1) between text and background colors",
+          "Test with color blindness simulators",
+          "Ensure color is not the only means of conveying information"
+        ],
+        "textAccessibility": [
+          "Use proper heading tags (h1, h2, h3) for semantic hierarchy",
+          "Test with screen readers and 200% zoom",
+          "Ensure text can be selected and copied"
+        ]
+      },
+      "typography": {
+        "hierarchy": [
+          "body-text"
+        ],
+        "scale": {
+          "sizes": [
+            16
+          ],
+          "weights": [
+            400
+          ],
+          "families": []
+        },
+        "semanticMapping": {
+          "community": "body-text"
+        },
+        "recommendations": {
+          "systemApproach": "simple-scale",
+          "tokenStructure": {},
+          "accessibilityNotes": [
+            "Ensure sufficient color contrast ratios",
+            "Test with screen readers and zoom up to 200%"
+          ]
+        }
+      },
+      "colorSystem": {
+        "palette": [
+          {
+            "value": "rgba(247, 210, 135, 1)",
+            "usage": [
+              "background",
+              "text"
+            ],
+            "frequency": 2,
+            "elements": [
+              "Community",
+              "Community"
+            ]
+          },
+          {
+            "value": "rgba(1, 24, 33, 1)",
+            "usage": [
+              "text"
+            ],
+            "frequency": 1,
+            "elements": [
+              "Community"
+            ]
+          }
+        ],
+        "usage": {
+          "background": 1,
+          "text": 2
+        },
+        "relationships": {
+          "dominantColor": "rgba(247, 210, 135, 1)",
+          "colorCount": 2,
+          "hasNeutrals": false,
+          "hasAccents": true
+        },
+        "recommendations": {
+          "tokenStructure": {
+            "color-bg-1": "rgba(247, 210, 135, 1)",
+            "color-text-1": "rgba(247, 210, 135, 1)",
+            "color-text-2": "rgba(1, 24, 33, 1)"
+          },
+          "accessibilityCompliance": {
+            "needsContrastCheck": true,
+            "recommendations": [
+              "Verify WCAG AA contrast ratios (4.5:1 for normal text)",
+              "Test with color blindness simulators",
+              "Ensure color is not the only means of conveying information"
+            ]
+          },
+          "systemApproach": "simple-palette"
+        }
+      }
+    },
+    "semantics": {
+      "role": "container",
+      "isInteractive": false,
+      "hasStates": [],
+      "hierarchyLevel": 0,
+      "contextualRole": "wrapper",
+      "componentRelationships": {
+        "isContainer": true,
+        "containsVariants": false,
+        "hasTextHierarchy": true,
+        "layoutPattern": "positioned-layout",
+        "nesting": {
+          "depth": 1,
+          "complexity": "simple"
+        },
+        "dependencies": [
+          {
+            "component": "Community",
+            "type": "text",
+            "role": "unknown"
+          }
+        ]
+      },
+      "compositionPatterns": [
+        "uniform-width",
+        "positioned-elements"
+      ]
+    },
+    "designSystem": {
+      "usesTokens": false,
+      "tokenCategories": [],
+      "designPatterns": [
+        "horizontal-stack",
+        "container",
+        "text-and-media"
+      ],
+      "tokenRecommendations": {
+        "colors": {
+          "color-bg-1": "rgba(247, 210, 135, 1)",
+          "color-text-1": "rgba(247, 210, 135, 1)",
+          "color-text-2": "rgba(1, 24, 33, 1)"
+        },
+        "typography": {},
+        "spacing": {
+          "spacing-1": "10px"
+        },
+        "borderRadius": {
+          "radius-1": "20px"
+        },
+        "shadows": {},
+        "breakpoints": {
+          "mobile": "320px",
+          "tablet": "768px",
+          "desktop": "1024px",
+          "component-width": "3224px"
+        }
+      },
+      "systemIntegration": {
+        "designSystemFit": {
+          "level": "molecular",
+          "reusability": "high",
+          "composability": "standalone"
+        },
+        "integrationStrategy": {
+          "approach": "custom-component",
+          "dependencies": [
+            "responsive-system"
+          ],
+          "variants": [
+            "small",
+            "medium",
+            "large"
+          ]
+        },
+        "scalability": {
+          "responsive": "fully-responsive",
+          "theming": "themeable",
+          "customization": "highly-customizable"
+        }
+      }
+    },
+    "codeGeneration": {
+      "preferredStructure": {
+        "componentType": "composite",
+        "structure": "standard-component",
+        "props": {
+          "required": [],
+          "optional": [
+            "className?",
+            "style?",
+            "children?"
+          ]
+        },
+        "children": "render-children"
+      },
+      "stateManagement": {
+        "required": false
+      },
+      "propsInterface": {
+        "required": [],
+        "optional": [
+          "className?",
+          "style?",
+          "children?"
+        ]
+      },
+      "cssStrategy": {
+        "approach": "css-in-js",
+        "reasoning": "Complex visual effects benefit from dynamic styling",
+        "recommendations": [
+          "Use CSS custom properties for theming",
+          "Consider styled-components or emotion for complex styles",
+          "Implement responsive design with CSS Grid/Flexbox"
+        ]
+      },
+      "testingHints": {
+        "unit": "Test rendering and props",
+        "integration": "Test component integration with parent components",
+        "accessibility": "Test with screen readers and keyboard navigation",
+        "visual": "Consider visual regression testing for complex components"
+      },
+      "implementationExamples": {
+        "react": {
+          "component": "\ninterface CommunityProps {\n  children?: React.ReactNode;\n  className?: string;\n}\n\nexport const Community: React.FC<CommunityProps> = ({ \n  children, \n  className,\n  ...props \n}) => {\n  return (\n    <div className={className} {...props}>\n      {children}\n    </div>\n  );\n};",
+          "props": {
+            "usage": "<Component className=\"custom-class\">Content</Component>",
+            "props": {
+              "className": "string",
+              "children": "React.ReactNode"
+            }
+          },
+          "styles": "\n.component {\n  display: flex;\n  flex-direction: row;\n  gap: 10px;\n  padding: 25px;\n}\n.component {\n        border-radius: 20px;\n  background-color: rgba(247, 210, 135, 1);\n  \n}\n.component {\n  width: 3224px;\n  height: 86px;\n}"
+        },
+        "typescript": {
+          "interface": "\ninterface CommunityProps {\n  className: string;\n  style: React.CSSProperties;\n  children: React.ReactNode;\n}",
+          "types": ""
+        },
+        "css": {
+          "classes": [
+            "container",
+            "container--large"
+          ],
+          "variables": {
+            "--primary-color": "rgba(247, 210, 135, 1)",
+            "--border-radius": "20px",
+            "--width": "3224px",
+            "--height": "86px",
+            "--gap": "10px"
+          }
+        }
+      },
+      "performanceOptimizations": [
+        "Use CSS containment for layout optimization"
+      ],
+      "animationOpportunities": {
+        "entrance": [],
+        "interaction": [],
+        "transition": [],
+        "microInteractions": [
+          "border-radius-hover-change",
+          "text-color-transition",
+          "typing-animation"
+        ],
+        "recommendations": {
+          "library": "framer-motion",
+          "performance": "Use transform and opacity for best performance",
+          "accessibility": "Respect prefers-reduced-motion user preference"
+        }
+      }
+    },
+    "accessibility": "Use proper ARIA roles and labels for container",
+    "layout": "Use flexbox with horizontal direction",
+    "styling": "Apply consistent visual styling",
+    "dimensions": "3224×86px",
+    "pixelPerfectInstructions": {
+      "overview": "This component includes advanced data for precise reproduction",
+      "dataAvailable": {
+        "enhancedVisuals": true,
+        "precisePositioning": true,
+        "advancedTypography": true,
+        "componentSystem": true,
+        "designContext": true
+      },
+      "positioningGuidance": {
+        "useSubPixels": "Use the preciseX and preciseY values for exact positioning",
+        "relativePositioning": "Element is 336800.0% from left, 424000.0% from top of parent",
+        "pixelPerfectBounds": "Visual bounds: 3224×86px",
+        "implementationHint": "Use transform: translate3d() for sub-pixel positioning"
+      },
+      "typographyGuidance": {
+        "fontLoading": "Use font-display: swap for optimal loading",
+        "textMetrics": "Actual text width: 0px, ascent: 12px",
+        "lineSpacing": "Single-line text",
+        "fontStack": "Primary: inherit, Fallback: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
+        "implementationHint": "Use line-height and letter-spacing values from textMetrics"
+      },
+      "visualGuidance": {
+        "blendModes": "Apply mix-blend-mode: PASS_THROUGH",
+        "masking": "No clipping required",
+        "backdropEffects": "No backdrop effects",
+        "subPixelRendering": "Enable text-rendering: optimizeLegibility",
+        "implementationHint": "Use CSS containment and will-change for complex effects"
+      },
+      "componentGuidance": {
+        "designSystem": "Standalone component",
+        "instanceOverrides": "Base component state",
+        "styleReferences": "Uses 1 design system styles",
+        "implementationHint": "Consider creating prop interfaces for overrides"
+      },
+      "implementationStrategy": {
+        "approach": "precise-reproduction",
+        "priority": [
+          "Use precise positioning values",
+          "Implement exact typography measurements",
+          "Apply advanced visual effects",
+          "Respect design system relationships"
+        ],
+        "framework": {
+          "react": "Use styled-components or CSS-in-JS for precise control",
+          "vue": "Use scoped styles with CSS custom properties",
+          "angular": "Use component-scoped styles with ViewEncapsulation"
+        },
+        "css": {
+          "positioning": "absolute/relative with transform",
+          "typography": "exact line-height and letter-spacing",
+          "effects": "advanced CSS properties"
+        }
+      }
+    }
+  }
+}
