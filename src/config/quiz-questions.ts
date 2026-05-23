@@ -1,8 +1,14 @@
 // Config Layer - Quiz Questions
 // Personalization assessment for new users
 
+import React from 'react';
+import { SvgProps } from 'react-native-svg';
+
 // Question types
 export type QuizQuestionType = 'mood' | 'singleSelect' | 'multiSelect' | 'text' | 'slider';
+
+// SVG illustration component type
+export type IllustrationSvg = React.ComponentType<SvgProps>;
 
 // Quiz question interface
 export interface QuizQuestion {
@@ -11,7 +17,7 @@ export interface QuizQuestion {
   subtitle?: string;
   type: QuizQuestionType;
   illustration?: string;
-  illustrationPng?: any;
+  illustrationSvg?: IllustrationSvg;
   options?: QuizOption[];
   placeholder?: string;
   minValue?: number;
@@ -37,6 +43,13 @@ export interface ResultMapping {
   initialMoodSuggestion?: string;
 }
 
+// Import SVG illustrations
+import MoodRangeSvg from '@assets/mental/SVG/mood range.svg';
+import OverloadedSvg from '@assets/mental/SVG/overloaded.svg';
+import MoodChangeSvg from '@assets/mental/SVG/mood change.svg';
+import MedicationSvg from '@assets/mental/SVG/medication.svg';
+import PutTogetherSvg from '@assets/mental/SVG/put together.svg';
+
 // Quiz configuration
 export const QUIZ_CONFIG = {
   screens: [
@@ -45,8 +58,8 @@ export const QUIZ_CONFIG = {
       question: 'How are you feeling right now?',
       subtitle: 'Be honest - this helps us personalize your experience',
       type: 'mood' as QuizQuestionType,
-      illustration: 'asking about feelings',
-      illustrationPng: require('@assets/mental/PNG/asking about feelings.png'),
+      illustration: 'mood range',
+      illustrationSvg: MoodRangeSvg,
       isRequired: true,
       options: [
         { id: 'love', label: 'Loved', value: 'love' },
@@ -63,7 +76,7 @@ export const QUIZ_CONFIG = {
       subtitle: 'Select up to 3 that apply',
       type: 'multiSelect' as QuizQuestionType,
       illustration: 'overloaded',
-      illustrationPng: require('@assets/mental/PNG/overloaded.png'),
+      illustrationSvg: OverloadedSvg,
       isRequired: true,
       maxSelect: 3,
       options: [
@@ -81,7 +94,8 @@ export const QUIZ_CONFIG = {
       question: "How long have you been feeling this way?",
       subtitle: 'This helps us understand your situation better',
       type: 'singleSelect' as QuizQuestionType,
-      illustration: 'time',
+      illustration: 'mood change',
+      illustrationSvg: MoodChangeSvg,
       isRequired: true,
       options: [
         { id: 'today', label: 'Just today', value: 'today' },
@@ -98,7 +112,7 @@ export const QUIZ_CONFIG = {
       subtitle: 'Select all that apply',
       type: 'multiSelect' as QuizQuestionType,
       illustration: 'medication',
-      illustrationPng: require('@assets/mental/PNG/medication.png'),
+      illustrationSvg: MedicationSvg,
       isRequired: false,
       maxSelect: 5,
       options: [
@@ -117,7 +131,7 @@ export const QUIZ_CONFIG = {
       subtitle: 'Describe your ideal state of wellbeing',
       type: 'text' as QuizQuestionType,
       illustration: 'put together',
-      illustrationPng: require('@assets/mental/PNG/put together.png'),
+      illustrationSvg: PutTogetherSvg,
       placeholder: 'I want to feel more... and less...',
       isRequired: false
     }

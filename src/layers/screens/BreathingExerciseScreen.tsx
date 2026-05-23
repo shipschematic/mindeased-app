@@ -1,5 +1,5 @@
 // Layers - Screens - Breathing Exercise Screen
-// Calming 4-7-8 breathing technique
+// Interactive breathing exercise with visual guide
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -7,131 +7,148 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   Animated,
-  Easing,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useStore } from '@/state/store';
 import { colors, typography, spacing, borderRadius } from '@/config/theme';
+import { MusicMeditationSvg, AchievementSvg } from '@/config/svg-icons';
 
-type BreathPhase = 'ready' | 'inhale' | 'hold' | 'exhale' | 'holdAfterExhale' | 'complete';
+type BreathingPhase = 'inhale' | 'hold' | 'exhale' | 'rest';
 
-const BREATHING_PATTERN = {
-  inhale: 4,
-  hold: 7,
-  exhale: 8,
-};
+const PHASES: { phase: BreathingPhase; duration: number; label: string; instruction: string }[] = [
+  { phase: 'inhale', duration: 4000, label: 'Inhale', instruction: 'Breathe in deeply through your nose' },
+  { phase: 'hold', duration: 4000, label: 'Hold', instruction: 'Hold your breath gently' },
+  { phase: 'exhale', duration: 4000, label: 'Exhale', instruction: 'Breathe out slowly through your mouth' },
+  { phase: 'rest', duration: 2000, label: 'Rest', instruction: 'Relax and prepare for the next breath' },
+];
+
+const TOTAL_CYCLES = 5;
 
 export const BreathingExerciseScreen: React.FC = () => {
   const navigation = useNavigation();
   
-  const [phase, setPhase] = useState<BreathPhase>('ready');
-  const [count, setCount] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
-  const [totalCycles, setTotalCycles] = useState(4);
+  const [completed, setCompleted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(0.6)).current;
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   
-  const phaseInstructions: Record<BreathPhase, string> = {
-    ready: 'Find a comfortable position',
-    inhale: 'Breathe in slowly through your nose',
-    hold: 'Hold your breath gently',
-    exhale: 'Exhale slowly through your mouth',
-    holdAfterExhale: 'Hold briefly',
-    complete: 'You did it!',
-  };
+  const currentPhase = PHASES[currentPhaseIndex];
+  const progress = (cycleCount / TOTAL_CYCLES) * 100;
   
-  const phaseEmoji: Record<BreathPhase, string> = {
-    ready: '🧘',
-    inhale: '💨',
-    hold: '⏸️',
-    exhale: '😮‍💨',
-    holdAfterExhale: '⏸️',
-    complete: '✨',
-  };
-
   useEffect(() => {
-    if (phase === 'ready') return;
+    if (isActive) {
+      startPhaseAnimation();
+    }
     
-    let interval: NodeJS.Timeout;
-    let countdown = phase === 'inhale' ? BREATHING_PATTERN.inhale :
-                   phase === 'hold' ? BREATHING_PATTERN.hold :
-                   phase === 'exhale' ? BREATHING_PATTERN.exhale : 1;
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [isActive, currentPhaseIndex]);
+  
+  const startPhaseAnimation = () => {
+    const phase = PHASES[currentPhaseIndex];
     
-    setCount(countdown);
+    // Animate based on phase
+    if (phase.phase === 'inhale') {
+      Animated.parallel([
+        Animated.timing(scaleAnim, {
+          toValue: 1.5,
+          duration: phase.duration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: phase.duration,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else if (phase.phase === 'exhale') {
+      Animated.parallel([
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: phase.duration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0.6,
+          duration: phase.duration,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
     
-    interval = setInterval(() => {
-      countdown--;
-      setCount(countdown);
-      
-      if (countdown <= 0) {
-        clearInterval(interval);
+    // Schedule next phase
+    timerRef.current = setTimeout(() => {
+      if (currentPhaseIndex < PHASES.length - 1) {
+        setCurrentPhaseIndex(prev => prev + 1);
+      } else {
+        // Completed a cycle
+        const newCycleCount = cycleCount + 1;
+        setCycleCount(newCycleCount);
         
-        if (phase === 'inhale') {
-          setPhase('hold');
-          animateBreath('hold');
-        } else if (phase === 'hold') {
-          setPhase('exhale');
-          animateBreath('exhale');
-        } else if (phase === 'exhale') {
-          if (cycleCount + 1 >= totalCycles) {
-            setPhase('complete');
-          } else {
-            setCycleCount(prev => prev + 1);
-            setPhase('inhale');
-            animateBreath('inhale');
+        if (newCycleCount >= TOTAL_CYCLES) {
+          setCompleted(true);
+          setShowCelebration(true);
+          setIsActive(false);
+          
+          // Save completion
+          const addJourneyEntry = (useStore.getState() as any).addJourneyEntry;
+          if (addJourneyEntry) {
+            addJourneyEntry({
+              type: 'breathingExercise',
+              completedAt: Date.now(),
+              cyclesCompleted: TOTAL_CYCLES,
+            });
           }
+        } else {
+          setCurrentPhaseIndex(0);
         }
       }
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [phase]);
-  
-  const animateBreath = (type: 'inhale' | 'hold' | 'exhale') => {
-    const targetScale = type === 'inhale' ? 1.3 : type === 'exhale' ? 0.8 : 1.1;
-    
-    Animated.timing(scaleAnim, {
-      toValue: targetScale,
-      duration: type === 'inhale' ? 4000 : type === 'exhale' ? 8000 : 1000,
-      easing: Easing.inOut(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    }, phase.duration);
   };
   
   const handleStart = () => {
-    setPhase('inhale');
-    animateBreath('inhale');
+    setIsActive(true);
+    setCurrentPhaseIndex(0);
+    setCycleCount(0);
+    setCompleted(false);
+    setShowCelebration(false);
   };
   
-  const handleComplete = () => {
+  const handleStop = () => {
+    setIsActive(false);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+  
+  const handleFinish = () => {
     navigation.goBack();
   };
-  
-  const handleRestart = () => {
-    setPhase('ready');
-    setCycleCount(0);
-    setCount(0);
-    scaleAnim.setValue(1);
-  };
 
-  if (phase === 'complete') {
+  if (showCelebration) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.completeContainer}>
-          <Text style={styles.completeEmoji}>✨</Text>
-          <Text style={styles.completeTitle}>Well Done!</Text>
-          <Text style={styles.completeSubtitle}>
-            You completed {totalCycles} breathing cycles.{'\n'}
-            Your nervous system thanks you.
+        <View style={styles.celebrationContainer}>
+          <View style={styles.celebrationImage}>
+            <AchievementSvg width={120} height={120} />
+          </View>
+          <Text style={styles.celebrationTitle}>Breathe Easy</Text>
+          <Text style={styles.celebrationSubtitle}>
+            You completed {TOTAL_CYCLES} cycles of mindful breathing.{'\n'}
+            Your body and mind thank you.
           </Text>
-          <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
-            <Text style={styles.completeButtonText}>Continue</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.restartButton} onPress={handleRestart}>
-            <Text style={styles.restartButtonText}>Practice Again</Text>
+          <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
+            <Text style={styles.finishButtonText}>Continue</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -140,66 +157,66 @@ export const BreathingExerciseScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Illustration */}
-      <View style={styles.illustrationContainer}>
-        <Image
-          source={require('@assets/mental/PNG/warm drink.png')}
-          style={styles.illustration}
-          resizeMode="contain"
-        />
-      </View>
-      
-      {/* Phase Indicator */}
-      <View style={styles.phaseContainer}>
-        <Text style={styles.phaseEmoji}>{phaseEmoji[phase]}</Text>
-        <Text style={styles.phaseInstruction}>{phaseInstructions[phase]}</Text>
-      </View>
-      
-      {/* Breath Circle */}
-      <View style={styles.circleContainer}>
-        <Animated.View 
-          style={[
-            styles.breathCircle,
-            { transform: [{ scale: scaleAnim }] }
-          ]}
-        >
-          {phase !== 'ready' && (
-            <Text style={styles.countText}>{count}</Text>
-          )}
-        </Animated.View>
-      </View>
-      
-      {/* Cycle Counter */}
-      <View style={styles.cycleContainer}>
-        <Text style={styles.cycleText}>
-          Cycle {cycleCount + 1} of {totalCycles}
-        </Text>
-        <View style={styles.cycleIndicators}>
-          {Array.from({ length: totalCycles }).map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.cycleDot,
-                i < cycleCount && styles.cycleDotComplete
-              ]}
-            />
-          ))}
+      <View style={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Mindful Breathing</Text>
+          <Text style={styles.subtitle}>
+            Follow the circle to guide your breath
+          </Text>
+        </View>
+        
+        {/* Breathing Circle */}
+        <View style={styles.circleContainer}>
+          <Animated.View
+            style={[
+              styles.breathingCircle,
+              {
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+              },
+            ]}
+          />
+          <View style={styles.circleInner}>
+            <Text style={styles.phaseLabel}>{currentPhase?.label || 'Ready'}</Text>
+            <Text style={styles.phaseInstruction}>
+              {currentPhase?.instruction || 'Press Start to begin'}
+            </Text>
+          </View>
+        </View>
+        
+        {/* Progress */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${progress}%` }]} />
+          </View>
+          <Text style={styles.progressText}>
+            Cycle {Math.min(cycleCount + 1, TOTAL_CYCLES)} of {TOTAL_CYCLES}
+          </Text>
+        </View>
+        
+        {/* Illustration */}
+        <View style={styles.illustrationContainer}>
+          <View style={styles.illustration}>
+            <MusicMeditationSvg width={80} height={80} opacity={0.4} />
+          </View>
         </View>
       </View>
       
-      {/* Progress indicator */}
-      <Text style={styles.techniqueText}>
-        4-7-8 Breathing Technique
-      </Text>
-      
-      {/* Start Button */}
-      {phase === 'ready' && (
-        <View style={styles.footer}>
+      {/* Controls */}
+      <View style={styles.footer}>
+        {!isActive ? (
           <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-            <Text style={styles.startButtonText}>Begin</Text>
+            <Text style={styles.startButtonText}>
+              {completed ? 'Start Again' : 'Start Breathing'}
+            </Text>
           </TouchableOpacity>
-        </View>
-      )}
+        ) : (
+          <TouchableOpacity style={styles.stopButton} onPress={handleStop}>
+            <Text style={styles.stopButtonText}>Stop</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </SafeAreaView>
   );
 };
@@ -208,90 +225,100 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.cream,
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
+    paddingTop: spacing['3xl'],
   },
-  illustrationContainer: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  illustration: {
-    width: 100,
-    height: 100,
-    opacity: 0.5,
-  },
-  phaseContainer: {
+  header: {
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  phaseEmoji: {
-    fontSize: 48,
-    marginBottom: spacing.sm,
-  },
-  phaseInstruction: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.medium,
+  title: {
+    fontSize: typography.fontSize['2xl'],
+    fontFamily: typography.fontFamily.bold,
     color: colors.text.primary,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
     textAlign: 'center',
   },
   circleContainer: {
+    width: 250,
+    height: 250,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xl,
   },
-  breathCircle: {
+  breathingCircle: {
+    position: 'absolute',
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: colors.primary[100],
-    borderWidth: 4,
-    borderColor: colors.primary[600],
+    backgroundColor: colors.primary[200],
+  },
+  circleInner: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: colors.background.white,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: colors.primary[600],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  countText: {
-    fontSize: 64,
+  phaseLabel: {
+    fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.primary[600],
+    marginBottom: spacing.xs,
   },
-  cycleContainer: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  cycleText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.secondary,
-    marginBottom: spacing.sm,
-  },
-  cycleIndicators: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  cycleDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: colors.border,
-  },
-  cycleDotComplete: {
-    backgroundColor: colors.primary[600],
-  },
-  techniqueText: {
+  phaseInstruction: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  progressContainer: {
+    width: '100%',
+    marginBottom: spacing.lg,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: colors.border,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+    marginBottom: spacing.sm,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.primary[600],
+    borderRadius: borderRadius.full,
+  },
+  progressText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.medium,
     color: colors.text.muted,
-    marginBottom: spacing.xl,
+    textAlign: 'center',
+  },
+  illustrationContainer: {
+    alignItems: 'center',
+  },
+  illustration: {
+    width: 80,
+    height: 80,
   },
   footer: {
-    position: 'absolute',
-    bottom: spacing['3xl'],
-    left: spacing.xl,
-    right: spacing.xl,
+    padding: spacing.lg,
   },
   startButton: {
     backgroundColor: colors.primary[600],
@@ -302,50 +329,53 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
-  completeContainer: {
+  stopButton: {
+    backgroundColor: colors.error,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+  },
+  stopButtonText: {
+    fontSize: typography.fontSize.lg,
+    fontFamily: typography.fontFamily.semibold,
+    color: colors.background.white,
+  },
+  celebrationContainer: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    paddingHorizontal: spacing.xl,
   },
-  completeEmoji: {
-    fontSize: 80,
+  celebrationImage: {
+    width: 120,
+    height: 120,
     marginBottom: spacing.lg,
   },
-  completeTitle: {
-    fontSize: typography.fontSize['2xl'],
+  celebrationTitle: {
+    fontSize: typography.fontSize['3xl'],
     fontFamily: typography.fontFamily.bold,
-    color: colors.primary[600],
+    color: colors.text.primary,
     marginBottom: spacing.sm,
   },
-  completeSubtitle: {
+  celebrationSubtitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
     textAlign: 'center',
-    marginBottom: spacing['2xl'],
-    lineHeight: 24,
+    lineHeight: 22,
+    marginBottom: spacing.xl,
   },
-  completeButton: {
+  finishButton: {
     backgroundColor: colors.primary[600],
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing['3xl'],
     borderRadius: borderRadius.xl,
-    marginBottom: spacing.md,
   },
-  completeButtonText: {
-    fontSize: typography.fontSize.base,
+  finishButtonText: {
+    fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
-  },
-  restartButton: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing['2xl'],
-  },
-  restartButtonText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.primary[600],
+    color: colors.background.white,
   },
 });

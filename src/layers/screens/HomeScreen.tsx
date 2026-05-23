@@ -18,15 +18,20 @@ import { useIntents } from '@/intents/actions';
 import { CONTENT } from '@/config/content';
 import { colors, typography, spacing, borderRadius } from '@/config/theme';
 import type { MoodType } from '@/state/types';
-import { MOOD_WORKFLOWS } from '@/config/mood-workflows';
 
-// Mood emoji config
-const MOOD_CONFIG: Array<{ type: MoodType; emoji: string; color: string; label: string }> = [
-  { type: 'love', emoji: '❤️', color: colors.mood.love, label: 'Love' },
-  { type: 'good', emoji: '😊', color: colors.mood.good, label: 'Good' },
-  { type: 'depress', emoji: '😞', color: colors.mood.depress, label: 'Depressed' },
-  { type: 'sad', emoji: '😢', color: colors.mood.sad, label: 'Sad' },
-  { type: 'worried', emoji: '😟', color: colors.mood.worried, label: 'Worried' },
+// Import SVG illustrations
+import GoodMoodSvg from '@assets/mental/SVG/good mood.svg';
+import BadMoodSvg from '@assets/mental/SVG/bad mood.svg';
+import OverloadedSvg from '@assets/mental/SVG/overloaded.svg';
+import MoodRangeSvg from '@assets/mental/SVG/mood range.svg';
+
+// Mood config with mental health SVG assets
+const MOOD_CONFIG: Array<{ type: MoodType; emoji: string; color: string; label: string; SvgComponent: React.ComponentType<any> }> = [
+  { type: 'love', emoji: '❤️', color: colors.mood.love, label: 'Love', SvgComponent: GoodMoodSvg },
+  { type: 'good', emoji: '😊', color: colors.mood.good, label: 'Good', SvgComponent: GoodMoodSvg },
+  { type: 'depress', emoji: '😞', color: colors.mood.depress, label: 'Depressed', SvgComponent: BadMoodSvg },
+  { type: 'sad', emoji: '😢', color: colors.mood.sad, label: 'Sad', SvgComponent: BadMoodSvg },
+  { type: 'worried', emoji: '😟', color: colors.mood.worried, label: 'Worried', SvgComponent: OverloadedSvg },
 ];
 
 export const HomeScreen: React.FC = () => {
@@ -34,6 +39,7 @@ export const HomeScreen: React.FC = () => {
   const intents = useIntents();
   const currentMood = useStore(selectCurrentMood);
   const user = useStore(selectUser);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const getGreeting = (): string => {
     const hour = new Date().getHours();
@@ -46,9 +52,18 @@ export const HomeScreen: React.FC = () => {
     intents.mood.logMood(mood);
   };
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      // Navigate to search results or filter content
+      // For now, navigate to Journey with search context
+      (navigation.navigate as any)('Journey', { searchQuery: searchQuery.trim() });
+      setSearchQuery('');
+    }
+  };
+
   const displayName = user?.name?.split(' ')[0] || 'there';
   const currentMoodConfig = currentMood ? MOOD_CONFIG.find(m => m.type === currentMood) : null;
-  const currentWorkflow = currentMood ? MOOD_WORKFLOWS[currentMood] : null;
+  const MoodIllustration = currentMoodConfig?.SvgComponent || MoodRangeSvg;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,14 +83,22 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
+        <TouchableOpacity
+          style={styles.searchContainer}
+          onPress={handleSearch}
+          activeOpacity={0.8}
+        >
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
             placeholder={CONTENT.HOME.searchPlaceholder}
             placeholderTextColor={colors.text.muted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
           />
-        </View>
+        </TouchableOpacity>
 
         {/* Daily Mood Card */}
         <View style={styles.section}>
@@ -86,24 +109,16 @@ export const HomeScreen: React.FC = () => {
           >
             {/* Mood Illustration */}
             <View style={styles.moodCardLeft}>
-              {currentWorkflow ? (
-                <Image
-                  source={currentWorkflow.illustrationPng}
-                  style={styles.moodIllustration}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={styles.moodIllustrationPlaceholder}>
-                  <Text style={styles.moodIllustrationEmoji}>😊</Text>
-                </View>
-              )}
+              <View style={styles.moodIllustration}>
+                <MoodIllustration width={100} height={100} />
+              </View>
             </View>
             <View style={styles.moodCardContent}>
               <Text style={styles.moodCardTitle}>
-                {currentMood ? `You're feeling ${currentWorkflow?.primaryEmotion}` : 'How are you feeling?'}
+                {currentMood ? `You're feeling ${currentMoodConfig?.label}` : 'How are you feeling?'}
               </Text>
               <Text style={styles.moodCardSubtitle}>
-                {currentMood ? currentWorkflow?.affirmations[0] : 'Tap to log your mood'}
+                {currentMood ? 'Tap to change your mood' : 'Tap to log your mood'}
               </Text>
               <View style={styles.moodQuickSelect}>
                 {MOOD_CONFIG.map((mood) => (
@@ -293,17 +308,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  moodIllustrationPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.primary[100],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moodIllustrationEmoji: {
-    fontSize: 48,
-  },
   moodCardContent: {
     flex: 1,
   },
@@ -379,33 +383,28 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   pathCta: {
-    backgroundColor: colors.primary[50],
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.lg,
+    marginTop: 'auto',
   },
   pathCtaText: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
     color: colors.primary[600],
   },
   rescueCard: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.error + '15',
+    backgroundColor: colors.warning + '15',
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.error,
+    alignItems: 'center',
+    gap: spacing.md,
   },
   rescueIconContainer: {
     width: 48,
     height: 48,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.error + '30',
+    backgroundColor: colors.warning + '25',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: spacing.md,
   },
   rescueIcon: {
     fontSize: 24,
@@ -416,13 +415,13 @@ const styles = StyleSheet.create({
   rescueTitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.error,
-    marginBottom: spacing.xs,
+    color: colors.text.primary,
   },
   rescueSubtitle: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
+    marginTop: spacing.xs,
   },
   quickActions: {
     flexDirection: 'row',
@@ -434,14 +433,14 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     padding: spacing.md,
     alignItems: 'center',
-    gap: spacing.xs,
   },
   quickActionIcon: {
-    fontSize: 28,
+    fontSize: 24,
+    marginBottom: spacing.sm,
   },
   quickActionLabel: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
-    color: colors.text.secondary,
+    color: colors.text.primary,
   },
 });

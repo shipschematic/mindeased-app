@@ -7,7 +7,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
@@ -23,8 +22,7 @@ export const ChallengeScreen: React.FC = () => {
   const challengesList = Object.values(CHALLENGE_CONFIGS);
   
   const handleStartChallenge = (challengeId: string) => {
-    // TODO: Navigate to ChallengeDetail when implemented
-    console.log('Starting challenge:', challengeId);
+    (navigation.navigate as any)('ChallengeDetail', { challengeId });
   };
 
   return (
@@ -57,6 +55,7 @@ export const ChallengeScreen: React.FC = () => {
             const progress = userProgress 
               ? getChallengeProgress(challenge, userProgress.progress || 0)
               : 0;
+            const ChallengeSvg = challenge.illustrationSvg;
             
             return (
               <TouchableOpacity
@@ -67,11 +66,9 @@ export const ChallengeScreen: React.FC = () => {
               >
                 {/* Illustration */}
                 <View style={[styles.illustrationContainer, { backgroundColor: challenge.color + '20' }]}>
-                  <Image
-                    source={challenge.illustrationPng || require('@assets/mental/PNG/achievement.png')}
-                    style={styles.illustration}
-                    resizeMode="contain"
-                  />
+                  <View style={styles.illustration}>
+                    <ChallengeSvg width={60} height={60} />
+                  </View>
                 </View>
                 
                 {/* Content */}
@@ -197,69 +194,73 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   backButton: {
-    padding: spacing.sm,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   backIcon: {
     fontSize: 24,
     color: colors.text.primary,
   },
   title: {
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.semibold,
+    fontSize: typography.fontSize['2xl'],
+    fontFamily: typography.fontFamily.bold,
     color: colors.text.primary,
   },
   placeholder: {
     width: 40,
   },
   intro: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
   },
   introTitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   introText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   challengesContainer: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['3xl'],
+    paddingHorizontal: spacing.lg,
   },
   sectionTitle: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   challengeCard: {
     backgroundColor: colors.background.white,
-    borderRadius: borderRadius['2xl'],
-    overflow: 'hidden',
+    borderRadius: borderRadius.xl,
+    padding: spacing.md,
     marginBottom: spacing.lg,
   },
   illustrationContainer: {
-    height: 100,
+    width: '100%',
+    height: 120,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: spacing.md,
   },
   illustration: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
   },
   challengeContent: {
-    padding: spacing.lg,
+    flex: 1,
   },
   challengeHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: spacing.sm,
   },
   challengeTitle: {
@@ -270,17 +271,16 @@ const styles = StyleSheet.create({
   durationBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.lg,
   },
   durationText: {
     fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.semibold,
+    fontFamily: typography.fontFamily.medium,
   },
   challengeDescription: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
-    lineHeight: 20,
     marginBottom: spacing.md,
   },
   goalContainer: {
@@ -307,9 +307,8 @@ const styles = StyleSheet.create({
   progressBar: {
     flex: 1,
     height: 8,
-    backgroundColor: colors.border,
+    backgroundColor: colors.background.cardAlt,
     borderRadius: borderRadius.full,
-    overflow: 'hidden',
     marginRight: spacing.sm,
   },
   progressFill: {
@@ -317,26 +316,24 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
   },
   progressText: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
     color: colors.text.secondary,
-    width: 35,
-    textAlign: 'right',
   },
   milestonesContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
   },
   milestone: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
   milestoneDot: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: borderRadius.full,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
@@ -344,20 +341,23 @@ const styles = StyleSheet.create({
   },
   milestoneDay: {
     fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.semibold,
+    fontFamily: typography.fontFamily.bold,
     color: colors.text.primary,
   },
   milestoneLine: {
-    width: 30,
+    position: 'absolute',
+    top: 15,
+    left: 36,
+    width: 40,
     height: 2,
   },
   ctaContainer: {
-    alignItems: 'center',
+    marginTop: spacing.sm,
   },
   startButton: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.xl,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
   },
   startButtonText: {
     fontSize: typography.fontSize.base,
@@ -365,51 +365,47 @@ const styles = StyleSheet.create({
     color: colors.text.inverse,
   },
   howItWorks: {
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.xl,
-    backgroundColor: colors.background.cardAlt,
-    marginHorizontal: spacing.xl,
-    borderRadius: borderRadius['2xl'],
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    marginTop: spacing.xl,
+    marginBottom: spacing['3xl'],
   },
   howItWorksTitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
+    marginBottom: spacing.md,
   },
   step: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: spacing.md,
   },
   stepNumber: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.primary[600],
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
   },
   stepNumberText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.bold,
-    color: colors.text.inverse,
+    color: colors.primary[700],
   },
   stepContent: {
     flex: 1,
   },
   stepTitle: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: 2,
   },
   stepText: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
+    marginTop: spacing.xs,
   },
 });

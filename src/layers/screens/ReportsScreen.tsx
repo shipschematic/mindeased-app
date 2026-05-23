@@ -7,13 +7,13 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   SafeAreaView,
 } from 'react-native';
 import { useStore, selectMoodHistory, selectAchievements } from '@/state/store';
 import { MOOD_WORKFLOWS } from '@/config/mood-workflows';
 import { colors, typography, spacing, borderRadius } from '@/config/theme';
 import { MOOD_CONFIG, type MoodType } from '@/config/mood-config';
+import { JourneySvg } from '@/config/svg-icons';
 
 // Mood Bar Component
 const MoodBar = ({ mood, count, max }: { mood: MoodType; count: number; max: number }) => {
@@ -125,11 +125,9 @@ const WeeklyTrendCard = ({ history }: { history: Array<{ mood: string; count: nu
 const JourneyProgressCard = () => (
   <View style={styles.journeyProgressCard}>
     <View style={styles.journeyProgressLeft}>
-      <Image
-        source={require('@assets/mental/PNG/journey.png')}
-        style={styles.journeyIllustration}
-        resizeMode="contain"
-      />
+      <View style={styles.journeyIllustration}>
+        <JourneySvg width={80} height={80} />
+      </View>
     </View>
     <View style={styles.journeyProgressContent}>
       <Text style={styles.cardTitle}>Journey Progress</Text>
@@ -278,45 +276,40 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     marginBottom: spacing.md,
   },
-  // Journey Progress Card
-  journeyProgressCard: {
-    flexDirection: 'row',
-    backgroundColor: colors.primary[50],
-    marginHorizontal: spacing.lg,
+  moodDistributionCard: {
+    backgroundColor: colors.background.white,
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
-    marginTop: spacing.md,
   },
-  journeyProgressLeft: {
-    width: 80,
-  },
-  journeyIllustration: {
-    width: 80,
-    height: 80,
-  },
-  journeyProgressContent: {
-    flex: 1,
-    marginLeft: spacing.md,
-    justifyContent: 'center',
-  },
-  journeyProgressBar: {
-    height: 8,
-    backgroundColor: colors.background.white,
-    borderRadius: borderRadius.full,
-    overflow: 'hidden',
+  moodBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  journeyProgressFill: {
+  moodBarEmoji: {
+    fontSize: 24,
+    marginRight: spacing.sm,
+    width: 32,
+  },
+  moodBarContainer: {
+    flex: 1,
+    height: 12,
+    backgroundColor: colors.background.cardAlt,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  moodBar: {
     height: '100%',
-    backgroundColor: colors.primary[600],
     borderRadius: borderRadius.full,
   },
-  journeyProgressText: {
+  moodBarCount: {
     fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.primary[700],
+    fontFamily: typography.fontFamily.medium,
+    color: colors.text.secondary,
+    marginLeft: spacing.sm,
+    width: 24,
+    textAlign: 'right',
   },
-  // Weekly Trend
   weeklyTrendCard: {
     backgroundColor: colors.background.white,
     borderRadius: borderRadius.xl,
@@ -324,22 +317,22 @@ const styles = StyleSheet.create({
   },
   trendGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginBottom: spacing.lg,
   },
   trendDay: {
     alignItems: 'center',
+    gap: spacing.xs,
   },
   trendDot: {
-    width: 24,
-    height: 24,
-    borderRadius: borderRadius.full,
-    marginBottom: spacing.xs,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
   trendDayLabel: {
     fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.muted,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.text.secondary,
   },
   trendStats: {
     flexDirection: 'row',
@@ -354,50 +347,50 @@ const styles = StyleSheet.create({
   trendStatValue: {
     fontSize: typography.fontSize.xl,
     fontFamily: typography.fontFamily.bold,
-    color: colors.primary[600],
+    color: colors.text.primary,
   },
   trendStatLabel: {
-    fontSize: typography.fontSize.xs,
+    fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
-    color: colors.text.muted,
+    color: colors.text.secondary,
     marginTop: spacing.xs,
   },
-  // Mood Distribution
-  moodDistributionCard: {
+  journeyProgressCard: {
+    flexDirection: 'row',
     backgroundColor: colors.background.white,
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.lg,
   },
-  moodBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
+  journeyProgressLeft: {
+    marginRight: spacing.md,
   },
-  moodBarEmoji: {
-    fontSize: 20,
-    width: 30,
+  journeyIllustration: {
+    width: 80,
+    height: 80,
   },
-  moodBarContainer: {
+  journeyProgressContent: {
     flex: 1,
-    height: 16,
+    justifyContent: 'center',
+  },
+  journeyProgressBar: {
+    height: 8,
     backgroundColor: colors.background.cardAlt,
     borderRadius: borderRadius.full,
     overflow: 'hidden',
-    marginHorizontal: spacing.sm,
+    marginBottom: spacing.xs,
   },
-  moodBar: {
+  journeyProgressFill: {
     height: '100%',
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.primary[600],
     borderRadius: borderRadius.full,
   },
-  moodBarCount: {
+  journeyProgressText: {
     fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.medium,
+    fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
-    width: 30,
-    textAlign: 'right',
   },
-  // Insights
   insightsCard: {
     backgroundColor: colors.background.white,
     borderRadius: borderRadius.xl,
@@ -412,8 +405,8 @@ const styles = StyleSheet.create({
   insightsBadge: {
     width: 32,
     height: 32,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.secondary[100],
+    borderRadius: 16,
+    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -424,36 +417,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   insightEmoji: {
     fontSize: 20,
-    marginRight: spacing.md,
+    marginRight: spacing.sm,
   },
   insightText: {
-    flex: 1,
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
+    color: colors.text.primary,
   },
-  // Achievement Card
   achievementCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.background.white,
     borderRadius: borderRadius.xl,
     padding: spacing.md,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   achievementLocked: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
   achievementIcon: {
     width: 48,
     height: 48,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.secondary[100],
+    borderRadius: 24,
+    backgroundColor: colors.primary[100],
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -465,7 +454,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   achievementEmojiLocked: {
-    opacity: 0.3,
+    opacity: 0.5,
   },
   achievementContent: {
     flex: 1,
@@ -474,7 +463,6 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: spacing.xs,
   },
   achievementTitleLocked: {
     color: colors.text.muted,
@@ -483,11 +471,12 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
+    marginTop: spacing.xs,
   },
   achievementBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: borderRadius.full,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: colors.success,
     alignItems: 'center',
     justifyContent: 'center',
@@ -495,6 +484,5 @@ const styles = StyleSheet.create({
   achievementBadgeText: {
     fontSize: 14,
     color: colors.background.white,
-    fontWeight: 'bold',
   },
 });

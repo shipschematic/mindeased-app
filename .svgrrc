@@ -1,12 +1,6 @@
 {
-  "plugins": [
-    [
-      "@svgr/babel-plugin-replace-jsx-attribute-value",
-      {
-        "value": "#1C252E",
-        "attribute": "fill"
-      }
-    ]
-  ],
+  "replaceAttrValues": {
+    "#1C252E": "{props.fill}"
+  },
   "dimensions": false
 }

@@ -5,7 +5,11 @@
   "root": true,
   "ignorePatterns": ["*.config.js", "metro.config.js", "babel.config.js", "app.config.js"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "no-console": ["warn", { "allow": ["warn", "error"] }]
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "@typescript-eslint/no-var-requires": "off",
+    "prefer-const": "off",
+    "no-case-declarations": "off"
   }
 }

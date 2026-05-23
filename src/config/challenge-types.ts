@@ -1,10 +1,14 @@
 // Config Layer - Challenge Types
 // Defines gamified challenges (different from Journey activities)
 
-import { ImageSourcePropType } from 'react-native';
+import React from 'react';
+import { SvgProps } from 'react-native-svg';
 
 // Challenge category
 export type ChallengeCategory = 'habit' | 'awareness' | 'social' | 'insight';
+
+// SVG illustration component type
+export type IllustrationSvg = React.ComponentType<SvgProps>;
 
 // Challenge milestone
 export interface ChallengeMilestone {
@@ -23,7 +27,7 @@ export interface ChallengeConfig {
   duration: number; // days
   goal: string;
   illustration: string;
-  illustrationPng?: ImageSourcePropType;
+  illustrationSvg: IllustrationSvg;
   
   // Gamification
   completionsRequired: number;
@@ -38,6 +42,14 @@ export interface ChallengeConfig {
   color: string;
 }
 
+// Import SVG illustrations
+import DailyBalanceSvg from '@assets/mental/SVG/daily balance.svg';
+import MoodRangeSvg from '@assets/mental/SVG/mood range.svg';
+import SupportSvg from '@assets/mental/SVG/support.svg';
+import PutTogetherSvg from '@assets/mental/SVG/put together.svg';
+import OnlineTherapySvg from '@assets/mental/SVG/online therapy.svg';
+import JournalingSvg from '@assets/mental/SVG/journaling.svg';
+
 // Challenge configurations
 export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
   sevenDayHabit: {
@@ -48,7 +60,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 7,
     goal: 'Complete your chosen habit daily',
     illustration: 'habit',
-    illustrationPng: require('@assets/mental/PNG/daily balance.png'),
+    illustrationSvg: DailyBalanceSvg,
     completionsRequired: 7,
     requiresDailyCheckIn: true,
     streakBonus: true,
@@ -70,7 +82,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 14,
     goal: 'Log mood and reason every day',
     illustration: 'mood range',
-    illustrationPng: require('@assets/mental/PNG/mood range.png'),
+    illustrationSvg: MoodRangeSvg,
     completionsRequired: 14,
     requiresDailyCheckIn: true,
     streakBonus: false,
@@ -91,7 +103,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 7,
     goal: 'Share 1 post and support 3 others',
     illustration: 'support',
-    illustrationPng: require('@assets/mental/PNG/support.png'),
+    illustrationSvg: SupportSvg,
     completionsRequired: 4, // 1 share + 3 supports
     requiresDailyCheckIn: false,
     streakBonus: false,
@@ -112,7 +124,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 7,
     goal: 'Complete 3 guided journal sessions',
     illustration: 'put together',
-    illustrationPng: require('@assets/mental/PNG/put together.png'),
+    illustrationSvg: PutTogetherSvg,
     completionsRequired: 3,
     requiresDailyCheckIn: false,
     streakBonus: false,
@@ -133,7 +145,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 7,
     goal: 'Complete 3 rescue sessions',
     illustration: 'online therapy',
-    illustrationPng: require('@assets/mental/PNG/online therapy.png'),
+    illustrationSvg: OnlineTherapySvg,
     completionsRequired: 3,
     requiresDailyCheckIn: false,
     streakBonus: false,
@@ -154,7 +166,7 @@ export const CHALLENGE_CONFIGS: Record<string, ChallengeConfig> = {
     duration: 30,
     goal: 'Write in your journal 20 days',
     illustration: 'journaling',
-    illustrationPng: require('@assets/mental/PNG/journaling.png'),
+    illustrationSvg: JournalingSvg,
     completionsRequired: 20,
     requiresDailyCheckIn: true,
     streakBonus: true,
