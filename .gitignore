@@ -39,3 +39,11 @@ coverage/
 # Large asset folders
 assets/airaa-design-2000-icons-set/
 
+# Documentation & Guides
+SUPABASE_SETUP.md
+STYLING_GUIDE.md
+PROJECT_SUMMARY.md
+
+# Comate specs
+.comate/
+
