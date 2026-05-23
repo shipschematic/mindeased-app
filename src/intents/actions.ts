@@ -1,5 +1,6 @@
 // Intent Layer - Action Creators
 // UI expresses intent through these actions
+// Wires to Execute Layer (supabase services)
 
 import type {
   MoodType,
@@ -8,6 +9,16 @@ import type {
   ScreenId,
   TabId,
 } from '@/state/types';
+import { useStore } from '@/state/store';
+import {
+  authService,
+  moodService,
+  challengeService,
+  postService,
+  therapistService,
+  appointmentService,
+  achievementService,
+} from '@/execute/supabase';
 
 // ============= AUTH INTENTS =============
 export interface AuthIntents {
@@ -19,9 +30,9 @@ export interface AuthIntents {
 
 // ============= MOOD INTENTS =============
 export interface MoodIntents {
-  logMood: (mood: MoodType, reasons?: string[]) => void;
+  logMood: (mood: MoodType, reasons?: string[]) => Promise<void>;
   setMood: (mood: MoodType) => void;
-  addMoodEntry: (mood: MoodType, note?: string) => void;
+  addMoodEntry: (mood: MoodType, note?: string) => Promise<void>;
   clearMood: () => void;
   completeActivity: (activityId: string) => void;
 }
@@ -46,84 +57,152 @@ export interface AllIntents {
   journey: JourneyIntents;
 }
 
-// Intent implementation factory
-import { useStore } from '@/state/store';
-
+// Intent implementation factory - wires UI to Execute layer
 export const createIntents = (): AllIntents => {
   return {
     auth: {
       login: async (credentials) => {
-        console.log('INTENT: Login', credentials.email);
-        // Simulate auth - in real app, call API
-        useStore.getState().setUser({
-          id: '1',
-          email: credentials.email,
-          name: 'Kate Tanner',
-          avatar: 'https://i.pravatar.cc/150?u=kate',
-          createdAt: Date.now(),
-        });
+        const store = useStore.getState();
+        store.setLoading(true);
+        store.setError(null);
+
+        try {
+          const result = await authService.login(credentials.email, credentials.password);
+          if (!result.success || !result.data) {
+            throw new Error(result.error || 'Login failed');
+          }
+          store.setUser(result.data);
+        } catch (error) {
+          store.setError(error instanceof Error ? error.message : 'Login failed');
+          throw error;
+        } finally {
+          store.setLoading(false);
+        }
       },
+
       signup: async (data) => {
-        console.log('INTENT: Signup', data.email);
-        useStore.getState().setUser({
-          id: '1',
-          email: data.email,
-          name: data.name,
-          createdAt: Date.now(),
-        });
+        const store = useStore.getState();
+        store.setLoading(true);
+        store.setError(null);
+
+        try {
+          const result = await authService.signup(data.email, data.password, data.name);
+          if (!result.success || !result.data) {
+            throw new Error(result.error || 'Signup failed');
+          }
+          store.setUser(result.data);
+        } catch (error) {
+          store.setError(error instanceof Error ? error.message : 'Signup failed');
+          throw error;
+        } finally {
+          store.setLoading(false);
+        }
       },
+
       logout: async () => {
-        console.log('INTENT: Logout');
-        useStore.getState().clearUser();
+        const store = useStore.getState();
+        store.setLoading(true);
+
+        try {
+          const result = await authService.logout();
+          if (!result.success) {
+            throw new Error(result.error || 'Logout failed');
+          }
+          store.clearUser();
+        } catch (error) {
+          store.setError(error instanceof Error ? error.message : 'Logout failed');
+          throw error;
+        } finally {
+          store.setLoading(false);
+        }
       },
+
       socialLogin: async (provider) => {
-        console.log('INTENT: Social login', provider);
-        useStore.getState().setUser({
-          id: '1',
-          email: 'user@example.com',
-          name: 'Kate Tanner',
-          createdAt: Date.now(),
-        });
+        const store = useStore.getState();
+        store.setLoading(true);
+        store.setError(null);
+
+        try {
+          const result = await authService.socialLogin(provider);
+          if (!result.success) {
+            throw new Error(result.error || 'Social login failed');
+          }
+          // OAuth redirects - session will be handled by auth state listener
+        } catch (error) {
+          store.setError(error instanceof Error ? error.message : 'Social login failed');
+          throw error;
+        } finally {
+          store.setLoading(false);
+        }
       },
     },
+
     mood: {
-      logMood: (mood, reasons) => {
-        console.log('INTENT: Mood logged', mood);
-        useStore.getState().setMood(mood, reasons);
+      logMood: async (mood, reasons) => {
+        const store = useStore.getState();
+        const user = store.user;
+
+        // Always update local state immediately for responsive UI
+        store.setMood(mood, reasons);
+
+        // Sync to backend if authenticated
+        if (user) {
+          try {
+            const result = await moodService.logMood(mood, user.id, reasons);
+            if (!result.success) {
+              console.warn('Failed to sync mood to server:', result.error);
+            }
+          } catch (error) {
+            console.warn('Mood sync error:', error);
+          }
+        }
       },
+
       setMood: (mood) => {
-        console.log('INTENT: Set mood', mood);
         useStore.getState().setMood(mood);
       },
-      addMoodEntry: (mood, note) => {
-        console.log('INTENT: Add mood entry', mood, note);
-        useStore.getState().setMood(mood, note ? [note] : undefined);
+
+      addMoodEntry: async (mood, note) => {
+        const store = useStore.getState();
+        const user = store.user;
+
+        store.setMood(mood, note ? [note] : undefined);
+
+        if (user) {
+          try {
+            const result = await moodService.logMood(mood, user.id, note ? [note] : undefined);
+            if (!result.success) {
+              console.warn('Failed to sync mood entry:', result.error);
+            }
+          } catch (error) {
+            console.warn('Mood entry sync error:', error);
+          }
+        }
       },
+
       clearMood: () => {
-        console.log('INTENT: Clear mood');
         useStore.getState().setMood('good');
       },
+
       completeActivity: (activityId) => {
-        console.log('INTENT: Complete activity', activityId);
         useStore.getState().completeActivity(activityId);
       },
     },
+
     navigation: {
       navigateTo: (screen) => {
-        console.log('INTENT: Navigate to', screen);
         useStore.getState().setScreen(screen);
       },
       setActiveTab: (tab) => {
-        console.log('INTENT: Set tab', tab);
         useStore.getState().setActiveTab(tab);
       },
       goBack: () => {
-        console.log('INTENT: Go back');
+        // Navigation handled by React Navigation
       },
     },
+
     journey: {
       toggleTask: (taskId) => {
-        console.log('INTENT: Toggle task', taskId);
         useStore.getState().toggleTaskComplete(taskId);
       },
     },

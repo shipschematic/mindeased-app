@@ -151,3 +151,24 @@ export type ScreenId =
   | 'rescue';
 
 export type TabId = 'home' | 'community' | 'reports' | 'profile';
+
+// ============ DATABASE TYPES (match Supabase schema) ============
+export interface MoodLog {
+  id: string;
+  user_id: string;
+  mood: string;
+  reasons: string[];
+  notes?: string;
+  created_at: string;
+}
+
+export interface Appointment {
+  id: string;
+  user_id: string;
+  therapist_id: string;
+  date: string;
+  time: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  notes?: string;
+  created_at: string;
+}
