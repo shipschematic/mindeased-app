@@ -7,7 +7,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   ScrollView,
   TextInput,
@@ -67,16 +66,16 @@ export const ReasonOfMoodScreen: React.FC = () => {
     navigation.goBack();
   };
 
+  const WorkflowSvg = workflow.illustrationSvg;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Illustration */}
         <View style={styles.illustrationContainer}>
-          <Image
-            source={workflow.illustrationPng}
-            style={styles.illustration}
-            resizeMode="contain"
-          />
+          <View style={styles.illustration}>
+            <WorkflowSvg width={200} height={200} />
+          </View>
         </View>
         
         {/* Header */}

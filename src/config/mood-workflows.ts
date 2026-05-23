@@ -1,7 +1,8 @@
 // Config Layer - Mood Workflows
 // Defines therapeutic flows for each mood type
 
-import { ImageSourcePropType } from 'react-native';
+import React from 'react';
+import { SvgProps } from 'react-native-svg';
 
 // Mood type definition
 export type MoodType = 'love' | 'good' | 'depress' | 'sad' | 'worried';
@@ -26,11 +27,14 @@ export interface NextAction {
   screen?: string;
 }
 
+// SVG illustration component type
+export type IllustrationSvg = React.ComponentType<SvgProps>;
+
 // Mood workflow configuration
 export interface MoodWorkflow {
   id: MoodType;
   illustration: string;
-  illustrationPng: ImageSourcePropType;
+  illustrationSvg: IllustrationSvg;
   primaryEmotion: string;
   requiresReason: boolean;
   rescueLevel: 0 | 1 | 2; // 0 = none, 1 = available, 2 = recommended
@@ -38,6 +42,10 @@ export interface MoodWorkflow {
   affirmations: string[];
   reasonOptions?: string[];
 }
+
+// Import SVG illustrations
+import GoodMoodSvg from '@assets/mental/SVG/good mood.svg';
+import BadMoodSvg from '@assets/mental/SVG/bad mood.svg';
 
 // Reason options based on mood
 const SAD_REASONS = [
@@ -72,7 +80,7 @@ export const MOOD_WORKFLOWS: Record<MoodType, MoodWorkflow> = {
   love: {
     id: 'love',
     illustration: 'good mood',
-    illustrationPng: require('@assets/mental/PNG/good mood.png'),
+    illustrationSvg: GoodMoodSvg,
     primaryEmotion: 'love',
     requiresReason: false,
     rescueLevel: 0,
@@ -91,7 +99,7 @@ export const MOOD_WORKFLOWS: Record<MoodType, MoodWorkflow> = {
   good: {
     id: 'good',
     illustration: 'good mood',
-    illustrationPng: require('@assets/mental/PNG/good mood.png'),
+    illustrationSvg: GoodMoodSvg,
     primaryEmotion: 'good',
     requiresReason: false,
     rescueLevel: 0,
@@ -110,7 +118,7 @@ export const MOOD_WORKFLOWS: Record<MoodType, MoodWorkflow> = {
   sad: {
     id: 'sad',
     illustration: 'bad mood',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png'),
+    illustrationSvg: BadMoodSvg,
     primaryEmotion: 'sad',
     requiresReason: true,
     rescueLevel: 2,
@@ -130,7 +138,7 @@ export const MOOD_WORKFLOWS: Record<MoodType, MoodWorkflow> = {
   worried: {
     id: 'worried',
     illustration: 'bad mood',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png'),
+    illustrationSvg: BadMoodSvg,
     primaryEmotion: 'worried',
     requiresReason: true,
     rescueLevel: 1,
@@ -150,7 +158,7 @@ export const MOOD_WORKFLOWS: Record<MoodType, MoodWorkflow> = {
   depress: {
     id: 'depress',
     illustration: 'bad mood',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png'),
+    illustrationSvg: BadMoodSvg,
     primaryEmotion: 'depressed',
     requiresReason: true,
     rescueLevel: 2,

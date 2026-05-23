@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -24,37 +23,38 @@ interface JourneyCardProps {
   isCompleted?: boolean;
 }
 
-const JourneyCard: React.FC<JourneyCardProps> = ({ activity, onPress, isCompleted }) => (
-  <TouchableOpacity style={styles.journeyCard} onPress={onPress} activeOpacity={0.8}>
-    <View style={styles.journeyCardLeft}>
-      <Image
-        source={activity.illustrationPng}
-        style={styles.journeyIllustration}
-        resizeMode="contain"
-      />
-    </View>
-    <View style={styles.journeyCardContent}>
-      <View style={styles.journeyCardHeader}>
-        <View style={styles.activityTypeTag}>
-          <Text style={styles.activityTypeTagText}>{activity.type}</Text>
+const JourneyCard: React.FC<JourneyCardProps> = ({ activity, onPress, isCompleted }) => {
+  const IllustrationSvg = activity.illustrationSvg;
+  return (
+    <TouchableOpacity style={styles.journeyCard} onPress={onPress} activeOpacity={0.8}>
+      <View style={styles.journeyCardLeft}>
+        <View style={styles.journeyIllustration}>
+          <IllustrationSvg width={80} height={80} />
         </View>
-        {isCompleted && (
-          <View style={styles.completedBadge}>
-            <Text style={styles.completedBadgeText}>✓</Text>
+      </View>
+      <View style={styles.journeyCardContent}>
+        <View style={styles.journeyCardHeader}>
+          <View style={styles.activityTypeTag}>
+            <Text style={styles.activityTypeTagText}>{activity.type}</Text>
           </View>
-        )}
-      </View>
-      <Text style={styles.journeyCardTitle}>{activity.title}</Text>
-      <Text style={styles.journeyCardDescription}>{activity.subtitle}</Text>
-      <View style={styles.journeyCardMeta}>
-        <Text style={styles.journeyMetaItem}>⏱️ {activity.estimatedMinutes} min</Text>
-        <View style={styles.journeyCta}>
-          <Text style={styles.journeyCtaText}>Start →</Text>
+          {isCompleted && (
+            <View style={styles.completedBadge}>
+              <Text style={styles.completedBadgeText}>✓</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.journeyCardTitle}>{activity.title}</Text>
+        <Text style={styles.journeyCardDescription}>{activity.subtitle}</Text>
+        <View style={styles.journeyCardMeta}>
+          <Text style={styles.journeyMetaItem}>⏱️ {activity.estimatedMinutes} min</Text>
+          <View style={styles.journeyCta}>
+            <Text style={styles.journeyCtaText}>Start →</Text>
+          </View>
         </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 export const JourneyScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -81,18 +81,29 @@ export const JourneyScreen: React.FC = () => {
   const handleActivityPress = (activityId: string) => {
     switch (activityId) {
       case 'guidedJournal':
-        navigation.navigate('GuidedJournal' as never);
+        (navigation.navigate as any)('GuidedJournal');
         break;
       case 'breathingExercise':
-        navigation.navigate('BreathingExercise' as never);
+        (navigation.navigate as any)('BreathingExercise');
         break;
       case 'rescueSession':
-        navigation.navigate('RescueSession' as never);
+        (navigation.navigate as any)('RescueSession');
         break;
-      case 'gratitude':
-        navigation.navigate('ReasonOfMood' as never);
+      case 'thoughtSharing':
+      case 'morningGratitude':
+      case 'eveningReflection':
+        // Navigate to GuidedJournal with activity type for generic journaling
+        (navigation.navigate as any)('GuidedJournal', { activityType: activityId });
+        break;
+      case 'moodReflection':
+        (navigation.navigate as any)('Reports');
+        break;
+      case 'audioJournal':
+        (navigation.navigate as any)('GuidedJournal', { activityType: 'audioJournal' });
         break;
       default:
+        // For activities without specific screens, mark as complete or show toast
+        handleActivityComplete(activityId);
         break;
     }
   };
@@ -104,6 +115,7 @@ export const JourneyScreen: React.FC = () => {
 
   const recommendedIds = getRecommendedActivities();
   const moodConfig = currentMood ? MOOD_CONFIG.find(m => m.type === currentMood) : null;
+  const MoodIllustration = moodConfig?.illustrationSvg || null;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -115,13 +127,11 @@ export const JourneyScreen: React.FC = () => {
         </View>
 
         {/* Mood Context Banner */}
-        {currentMood && moodConfig && (
+        {currentMood && moodConfig && MoodIllustration && (
           <View style={styles.moodContextBanner}>
-            <Image
-              source={moodConfig.illustrationPng}
-              style={styles.moodBannerIllustration}
-              resizeMode="contain"
-            />
+            <View style={styles.moodBannerIllustration}>
+              <MoodIllustration width={60} height={60} />
+            </View>
             <View style={styles.moodBannerContent}>
               <Text style={styles.moodBannerTitle}>
                 Feeling {moodConfig.label}?
@@ -175,7 +185,28 @@ export const JourneyScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>Your Milestones</Text>
           <View style={styles.milestonesContainer}>
             {JOURNEY_MILESTONES.map((milestone, index) => (
-              <View key={index} style={styles.milestoneItem}>
+              <TouchableOpacity
+                key={index}
+                style={styles.milestoneItem}
+                onPress={() => {
+                  // Navigate to relevant screen based on milestone
+                  switch (milestone.title) {
+                    case 'First Check-in':
+                      navigation.navigate('Mood' as never);
+                      break;
+                    case 'Journal Starter':
+                      navigation.navigate('GuidedJournal' as never);
+                      break;
+                    case 'Consistency':
+                    case 'Achievement Unlocked':
+                      navigation.navigate('Reports' as never);
+                      break;
+                    default:
+                      break;
+                  }
+                }}
+                activeOpacity={0.7}
+              >
                 <View style={[
                   styles.milestoneIcon,
                   { backgroundColor: index === 0 ? colors.primary[500] : colors.background.cardAlt }
@@ -186,7 +217,8 @@ export const JourneyScreen: React.FC = () => {
                   <Text style={styles.milestoneTitle}>{milestone.title}</Text>
                   <Text style={styles.milestoneDescription}>{milestone.description}</Text>
                 </View>
-              </View>
+                <Text style={styles.milestoneArrow}>›</Text>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -348,6 +380,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  milestoneArrow: {
+    fontSize: 24,
+    color: colors.text.muted,
+    marginLeft: spacing.sm,
   },
   milestoneIcon: {
     width: 40,

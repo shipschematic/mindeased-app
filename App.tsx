@@ -14,7 +14,6 @@ import { ReportsScreen } from './src/layers/screens/ReportsScreen';
 import { ProfileScreen } from './src/layers/screens/ProfileScreen';
 import { LoginScreen } from './src/layers/screens/LoginScreen';
 import { SignupScreen } from './src/layers/screens/SignupScreen';
-import { OnboardingScreen } from './src/layers/screens/OnboardingScreen';
 import { JourneyScreen } from './src/layers/screens/JourneyScreen';
 import { MoodScreen } from './src/layers/screens/MoodScreen';
 import { TherapistsScreen } from './src/layers/screens/TherapistsScreen';
@@ -56,7 +55,6 @@ function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Quiz" component={QuizScreen} />
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
     </Stack.Navigator>

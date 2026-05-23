@@ -7,11 +7,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  SafeAreaView,
   ScrollView,
   TextInput,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@/state/store';
 import { QUIZ_CONFIG, getQuizResult } from '@/config/quiz-questions';
@@ -21,6 +20,7 @@ import { colors, typography, spacing, borderRadius } from '@/config/theme';
 export const QuizScreen: React.FC = () => {
   const navigation = useNavigation();
   const completeOnboarding = useStore((state) => state.completeOnboarding);
+  const insets = useSafeAreaInsets();
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, any>>({});
@@ -215,9 +215,11 @@ export const QuizScreen: React.FC = () => {
     }
   };
   
+  const QuestionSvg = currentQuestion.illustrationSvg || null;
+  
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}>
         {/* Progress */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
@@ -229,13 +231,11 @@ export const QuizScreen: React.FC = () => {
         </View>
         
         {/* Illustration */}
-        {currentQuestion.illustrationPng && (
+        {QuestionSvg && (
           <View style={styles.illustrationContainer}>
-            <Image
-              source={currentQuestion.illustrationPng}
-              style={styles.illustration}
-              resizeMode="contain"
-            />
+            <View style={styles.illustration}>
+              <QuestionSvg width={120} height={120} />
+            </View>
           </View>
         )}
         
@@ -252,7 +252,7 @@ export const QuizScreen: React.FC = () => {
       </ScrollView>
       
       {/* Navigation */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
         {currentIndex > 0 && (
           <TouchableOpacity style={styles.prevButton} onPress={handlePrevious}>
             <Text style={styles.prevButtonText}>← Back</Text>
@@ -273,7 +273,7 @@ export const QuizScreen: React.FC = () => {
       </View>
       
       {/* Skip */}
-      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+      <TouchableOpacity style={[styles.skipButton, { paddingBottom: Math.max(insets.bottom, 16) + 8 }]} onPress={handleSkip}>
         <Text style={styles.skipText}>
           {isLastQuestion ? 'Skip for now' : 'Skip this question'}
         </Text>
@@ -289,18 +289,16 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing['3xl'],
+    padding: spacing.lg,
   },
   progressContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   progressBar: {
-    height: 6,
-    backgroundColor: colors.border,
+    height: 4,
+    backgroundColor: colors.background.cardAlt,
     borderRadius: borderRadius.full,
-    overflow: 'hidden',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   progressFill: {
     height: '100%',
@@ -310,80 +308,76 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
-    color: colors.text.muted,
-    textAlign: 'center',
+    color: colors.text.secondary,
+    textAlign: 'right',
   },
   illustrationContainer: {
     alignItems: 'center',
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   illustration: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
   },
   questionContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   question: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
     color: colors.text.primary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
-    textAlign: 'center',
   },
   moodGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
     gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   moodOption: {
-    width: '45%',
-    backgroundColor: colors.background.white,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
+    width: '30%',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+    backgroundColor: colors.background.cardAlt,
   },
   moodOptionSelected: {
+    backgroundColor: colors.primary[100],
+    borderWidth: 2,
     borderColor: colors.primary[600],
-    backgroundColor: colors.primary[50],
   },
   moodEmoji: {
     fontSize: 32,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   moodLabel: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-    textAlign: 'center',
+    color: colors.text.secondary,
   },
   moodLabelSelected: {
-    color: colors.primary[600],
+    color: colors.primary[700],
   },
   optionsList: {
-    gap: spacing.md,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
   },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background.white,
-    padding: spacing.lg,
+    padding: spacing.md,
     borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    backgroundColor: colors.background.cardAlt,
   },
   optionItemSelected: {
+    backgroundColor: colors.primary[100],
+    borderWidth: 2,
     borderColor: colors.primary[600],
-    backgroundColor: colors.primary[50],
   },
   optionLabel: {
     flex: 1,
@@ -392,12 +386,11 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   optionLabelSelected: {
-    color: colors.primary[600],
+    color: colors.primary[700],
   },
   optionCheck: {
     fontSize: 18,
     color: colors.primary[600],
-    marginLeft: spacing.sm,
   },
   checkbox: {
     width: 24,
@@ -415,66 +408,61 @@ const styles = StyleSheet.create({
   },
   checkboxCheck: {
     fontSize: 14,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
   multiSelectHint: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.muted,
-    textAlign: 'center',
     marginTop: spacing.sm,
   },
   textInputContainer: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   textInput: {
-    backgroundColor: colors.background.white,
+    backgroundColor: colors.background.cardAlt,
     borderRadius: borderRadius.xl,
-    padding: spacing.lg,
+    padding: spacing.md,
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.primary,
     minHeight: 120,
     textAlignVertical: 'top',
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   footer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['3xl'],
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
     gap: spacing.md,
   },
   prevButton: {
-    flex: 1,
     paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.xl,
-    alignItems: 'center',
     backgroundColor: colors.background.cardAlt,
   },
   prevButtonText: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.medium,
-    color: colors.text.secondary,
+    color: colors.text.primary,
   },
   nextButton: {
-    flex: 2,
+    flex: 1,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.xl,
-    alignItems: 'center',
     backgroundColor: colors.primary[600],
+    alignItems: 'center',
   },
   nextButtonDisabled: {
-    backgroundColor: colors.text.muted,
+    backgroundColor: colors.primary[200],
   },
   nextButtonText: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
   skipButton: {
     alignItems: 'center',
-    paddingBottom: spacing['3xl'],
   },
   skipText: {
     fontSize: typography.fontSize.sm,

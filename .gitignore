@@ -36,3 +36,6 @@ yarn-error.*
 # Testing
 coverage/
 
+# Large asset folders
+assets/airaa-design-2000-icons-set/
+

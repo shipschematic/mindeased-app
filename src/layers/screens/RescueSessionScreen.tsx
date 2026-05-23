@@ -7,13 +7,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing, borderRadius } from '@/config/theme';
-import { JOURNEY_ACTIVITIES } from '@/config/journey-types';
+import { OnlineSupportSvg } from '@/config/svg-icons';
 
 type RescueExercise = {
   id: string;
@@ -124,11 +123,9 @@ export const RescueSessionScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header Illustration */}
         <View style={styles.headerContainer}>
-          <Image
-            source={require('@assets/mental/PNG/online support.png')}
-            style={styles.headerIllustration}
-            resizeMode="contain"
-          />
+          <View style={styles.headerIllustration}>
+            <OnlineSupportSvg width={100} height={100} opacity={0.6} />
+          </View>
         </View>
         
         {/* Header */}
@@ -232,7 +229,6 @@ const styles = StyleSheet.create({
   headerIllustration: {
     width: 100,
     height: 100,
-    opacity: 0.6,
   },
   header: {
     alignItems: 'center',
@@ -298,53 +294,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   exerciseContent: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
+    padding: spacing.md,
+    paddingTop: 0,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
   instructionsList: {
-    paddingTop: spacing.md,
-    gap: spacing.sm,
+    marginTop: spacing.md,
   },
   instructionItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    marginBottom: spacing.sm,
   },
   instructionNumber: {
     width: 24,
     height: 24,
     borderRadius: 12,
     backgroundColor: colors.primary[100],
-    textAlign: 'center',
-    lineHeight: 24,
+    color: colors.primary[600],
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.primary[600],
+    textAlign: 'center',
+    lineHeight: 24,
     marginRight: spacing.sm,
   },
   instructionText: {
     flex: 1,
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.primary,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   markCompleteButton: {
-    marginTop: spacing.md,
+    backgroundColor: colors.primary[600],
     paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.primary[100],
     borderRadius: borderRadius.lg,
-    alignSelf: 'flex-start',
+    alignItems: 'center',
+    marginTop: spacing.md,
   },
   markCompleteText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.medium,
-    color: colors.primary[600],
+    color: colors.background.white,
   },
   crisisContainer: {
-    backgroundColor: colors.error + '15',
+    backgroundColor: colors.warning + '10',
     borderRadius: borderRadius.xl,
     padding: spacing.lg,
     marginBottom: spacing.xl,
@@ -352,7 +347,7 @@ const styles = StyleSheet.create({
   crisisTitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.error,
+    color: colors.warning,
     marginBottom: spacing.xs,
   },
   crisisSubtitle: {
@@ -362,29 +357,31 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   crisisNumbers: {
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   crisisItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: colors.background.white,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
   },
   crisisLabel: {
     fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.regular,
+    fontFamily: typography.fontFamily.medium,
     color: colors.text.primary,
   },
   crisisNumber: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.semibold,
-    color: colors.error,
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.bold,
+    color: colors.warning,
   },
   footer: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing['3xl'],
+    padding: spacing.lg,
   },
   iFeelBetterButton: {
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.success,
     paddingVertical: spacing.md,
     borderRadius: borderRadius.xl,
     alignItems: 'center',
@@ -392,22 +389,22 @@ const styles = StyleSheet.create({
   iFeelBetterText: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
   completionContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
   completionEmoji: {
-    fontSize: 80,
+    fontSize: 64,
     marginBottom: spacing.lg,
   },
   completionTitle: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.bold,
-    color: colors.primary[600],
+    color: colors.text.primary,
     marginBottom: spacing.sm,
   },
   completionSubtitle: {
@@ -415,30 +412,30 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: spacing.xl,
+    lineHeight: 22,
+    marginBottom: spacing.lg,
   },
   exercisesCompleted: {
     backgroundColor: colors.primary[100],
-    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.xl,
     marginBottom: spacing.xl,
   },
   exercisesCompletedText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.medium,
-    color: colors.primary[600],
+    color: colors.primary[700],
   },
   finishButton: {
     backgroundColor: colors.primary[600],
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing['3xl'],
     borderRadius: borderRadius.xl,
   },
   finishButtonText: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
 });

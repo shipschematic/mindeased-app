@@ -7,7 +7,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   SafeAreaView,
   ScrollView,
   TextInput,
@@ -17,6 +16,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useStore } from '@/state/store';
 import { JOURNEY_ACTIVITIES } from '@/config/journey-types';
 import { colors, typography, spacing, borderRadius } from '@/config/theme';
+import { AchievementSvg, JournalingSvg } from '@/config/svg-icons';
 
 type RootStackParamList = {
   GuidedJournal: { promptIndex?: number; journalType?: string };
@@ -92,11 +92,9 @@ export const GuidedJournalScreen: React.FC = () => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.celebrationContainer}>
-          <Image
-            source={require('@assets/mental/PNG/achievement.png')}
-            style={styles.celebrationImage}
-            resizeMode="contain"
-          />
+          <View style={styles.celebrationImage}>
+            <AchievementSvg width={120} height={120} />
+          </View>
           <Text style={styles.celebrationTitle}>Well Done!</Text>
           <Text style={styles.celebrationSubtitle}>{affirmation}</Text>
           <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
@@ -112,11 +110,9 @@ export const GuidedJournalScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Illustration */}
         <View style={styles.illustrationContainer}>
-          <Image
-            source={require('@assets/mental/PNG/journaling.png')}
-            style={styles.illustration}
-            resizeMode="contain"
-          />
+          <View style={styles.illustration}>
+            <JournalingSvg width={120} height={120} />
+          </View>
         </View>
         
         {/* Progress Indicator */}
@@ -299,37 +295,37 @@ const styles = StyleSheet.create({
   },
   celebrationContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: spacing.xl,
   },
   celebrationImage: {
-    width: 150,
-    height: 150,
-    marginBottom: spacing.xl,
+    width: 120,
+    height: 120,
+    marginBottom: spacing.lg,
   },
   celebrationTitle: {
     fontSize: typography.fontSize['3xl'],
     fontFamily: typography.fontFamily.bold,
-    color: colors.primary[600],
+    color: colors.text.primary,
     marginBottom: spacing.sm,
   },
   celebrationSubtitle: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.regular,
     color: colors.text.secondary,
     textAlign: 'center',
-    marginBottom: spacing['2xl'],
+    marginBottom: spacing.xl,
   },
   finishButton: {
     backgroundColor: colors.primary[600],
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing['2xl'],
+    paddingHorizontal: spacing['3xl'],
     borderRadius: borderRadius.xl,
   },
   finishButtonText: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
-    color: colors.text.inverse,
+    color: colors.background.white,
   },
 });

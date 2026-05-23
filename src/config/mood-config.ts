@@ -1,10 +1,14 @@
 // Config Layer - Mood Configuration
 // Shared mood settings used across screens
 
-import { ImageSourcePropType } from 'react-native';
+import React from 'react';
+import { SvgProps } from 'react-native-svg';
 
 // Mood type
 export type MoodType = 'love' | 'good' | 'depress' | 'sad' | 'worried';
+
+// SVG illustration component type
+export type IllustrationSvg = React.ComponentType<SvgProps>;
 
 // Mood configuration interface
 export interface MoodConfig {
@@ -12,8 +16,13 @@ export interface MoodConfig {
   emoji: string;
   color: string;
   label: string;
-  illustrationPng: ImageSourcePropType;
+  illustrationSvg: IllustrationSvg;
 }
+
+// Import SVG illustrations
+import GoodMoodSvg from '@assets/mental/SVG/good mood.svg';
+import BadMoodSvg from '@assets/mental/SVG/bad mood.svg';
+import OverloadedSvg from '@assets/mental/SVG/overloaded.svg';
 
 // Mood configuration - matches mood-workflows.ts
 export const MOOD_CONFIG: MoodConfig[] = [
@@ -22,35 +31,35 @@ export const MOOD_CONFIG: MoodConfig[] = [
     emoji: '❤️', 
     color: '#E91E63', 
     label: 'Love',
-    illustrationPng: require('@assets/mental/PNG/good mood.png')
+    illustrationSvg: GoodMoodSvg
   },
   { 
     type: 'good', 
     emoji: '😊', 
     color: '#4CAF50', 
     label: 'Good',
-    illustrationPng: require('@assets/mental/PNG/good mood.png')
+    illustrationSvg: GoodMoodSvg
   },
   { 
     type: 'depress', 
     emoji: '😞', 
     color: '#607D8B', 
     label: 'Depressed',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png')
+    illustrationSvg: BadMoodSvg
   },
   { 
     type: 'sad', 
     emoji: '😢', 
     color: '#2196F3', 
     label: 'Sad',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png')
+    illustrationSvg: BadMoodSvg
   },
   { 
     type: 'worried', 
     emoji: '😟', 
     color: '#FF9800', 
     label: 'Worried',
-    illustrationPng: require('@assets/mental/PNG/bad mood.png')
+    illustrationSvg: OverloadedSvg
   },
 ];
 
@@ -58,17 +67,3 @@ export const MOOD_CONFIG: MoodConfig[] = [
 export const getMoodConfig = (type: MoodType): MoodConfig | undefined => {
   return MOOD_CONFIG.find(m => m.type === type);
 };
-
-// Helper function to get emoji by type
-export const getMoodEmoji = (type: MoodType): string => {
-  const config = getMoodConfig(type);
-  return config?.emoji || '😐';
-};
-
-// Helper function to get color by type
-export const getMoodColor = (type: MoodType): string => {
-  const config = getMoodConfig(type);
-  return config?.color || '#999';
-};
-
-export default MOOD_CONFIG;

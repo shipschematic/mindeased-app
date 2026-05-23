@@ -1,7 +1,8 @@
 // Config Layer - Journey Types
 // Defines different journey activity types
 
-import { ImageSourcePropType } from 'react-native';
+import React from 'react';
+import { SvgProps } from 'react-native-svg';
 
 // Journey activity types
 export type JourneyActivityType = 
@@ -31,6 +32,9 @@ export interface RescueExercise {
   duration?: number; // seconds
 }
 
+// SVG illustration component type
+export type IllustrationSvg = React.ComponentType<SvgProps>;
+
 // Journey activity configuration
 export interface JourneyActivity {
   id: string;
@@ -38,7 +42,7 @@ export interface JourneyActivity {
   title: string;
   subtitle?: string;
   illustration: string;
-  illustrationPng?: ImageSourcePropType;
+  illustrationSvg: IllustrationSvg;
   icon: string;
   category: 'therapeutic' | 'calm' | 'crisis' | 'habit' | 'insight';
   estimatedMinutes: number;
@@ -60,6 +64,16 @@ export interface JourneyActivity {
   illustrationPosition?: 'top' | 'left' | 'right';
 }
 
+// Import SVG illustrations
+import ThoughtsSvg from '@assets/mental/SVG/thoughts.svg';
+import JournalingSvg from '@assets/mental/SVG/journaling.svg';
+import WarmDrinkSvg from '@assets/mental/SVG/warm drink.svg';
+import OnlineSupportSvg from '@assets/mental/SVG/online support.svg';
+import FeelingLowSvg from '@assets/mental/SVG/feeling low.svg';
+import MusicMeditationSvg from '@assets/mental/SVG/music-meditation.svg';
+import DailyBalanceSvg from '@assets/mental/SVG/daily balance.svg';
+import SleepSvg from '@assets/mental/SVG/sleep.svg';
+
 // Journey activities configuration
 export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
   thoughtSharing: {
@@ -68,7 +82,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Thought Sharing',
     subtitle: 'Express what\'s on your mind',
     illustration: 'thoughts',
-    illustrationPng: require('@assets/mental/PNG/thoughts.png'),
+    illustrationSvg: ThoughtsSvg,
     icon: '💭',
     category: 'therapeutic',
     estimatedMinutes: 5,
@@ -85,7 +99,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Guided Journal',
     subtitle: 'Process your feelings with CBT prompts',
     illustration: 'journaling',
-    illustrationPng: require('@assets/mental/PNG/journaling.png'),
+    illustrationSvg: JournalingSvg,
     icon: '📓',
     category: 'therapeutic',
     estimatedMinutes: 10,
@@ -106,7 +120,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Breathing Exercise',
     subtitle: 'Calm your nervous system',
     illustration: 'warm drink',
-    illustrationPng: require('@assets/mental/PNG/warm drink.png'),
+    illustrationSvg: WarmDrinkSvg,
     icon: '🌬️',
     category: 'calm',
     estimatedMinutes: 5,
@@ -127,7 +141,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Rescue Session',
     subtitle: 'You\'re not alone',
     illustration: 'online support',
-    illustrationPng: require('@assets/mental/PNG/online support.png'),
+    illustrationSvg: OnlineSupportSvg,
     icon: '🆘',
     category: 'crisis',
     estimatedMinutes: 15,
@@ -189,7 +203,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Mood Reflection',
     subtitle: 'Notice the patterns',
     illustration: 'feeling low',
-    illustrationPng: require('@assets/mental/PNG/feeling low.png'),
+    illustrationSvg: FeelingLowSvg,
     icon: '🔍',
     category: 'insight',
     estimatedMinutes: 8,
@@ -204,7 +218,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     title: 'Voice Journal',
     subtitle: 'Speak your truth',
     illustration: 'music-meditation',
-    illustrationPng: require('@assets/mental/PNG/music-meditation.png'),
+    illustrationSvg: MusicMeditationSvg,
     icon: '🎤',
     category: 'therapeutic',
     estimatedMinutes: 5,
@@ -218,12 +232,13 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     type: 'singleTask',
     title: 'Morning Gratitude',
     subtitle: 'Start with appreciation',
-    illustration: 'sunrise',
+    illustration: 'daily balance',
+    illustrationSvg: DailyBalanceSvg,
     icon: '☀️',
     category: 'habit',
     estimatedMinutes: 3,
     prompt: 'Name 3 things you\'re grateful for this morning',
-    showIllustration: false
+    showIllustration: true
   },
 
   eveningReflection: {
@@ -231,7 +246,8 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
     type: 'singleTask',
     title: 'Evening Reflection',
     subtitle: 'Review your day',
-    illustration: 'moon',
+    illustration: 'sleep',
+    illustrationSvg: SleepSvg,
     icon: '🌙',
     category: 'habit',
     estimatedMinutes: 5,
@@ -240,7 +256,7 @@ export const JOURNEY_ACTIVITIES: Record<string, JourneyActivity> = {
       'What could have been better?',
       'What did you learn?'
     ],
-    showIllustration: false
+    showIllustration: true
   }
 } as const;
 

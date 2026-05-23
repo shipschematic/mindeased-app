@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -32,15 +31,22 @@ export const MoodScreen: React.FC = () => {
   const intents = useIntents();
   const currentMood = useStore((state) => state.currentMood);
   const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
+  const [showWorkflow, setShowWorkflow] = useState(false);
 
   const handleMoodSelect = (mood: MoodType) => {
     setSelectedMood(mood);
+    setShowWorkflow(true);
     const workflow = MOOD_WORKFLOWS[mood];
 
     // If mood requires reason, navigate to ReasonOfMoodScreen
     if (workflow.requiresReason) {
       (navigation as any).navigate('ReasonOfMood', { mood });
     }
+  };
+
+  const handleBackToSelection = () => {
+    setSelectedMood(null);
+    setShowWorkflow(false);
   };
 
   const handleNextAction = (action: any) => {
@@ -77,14 +83,15 @@ export const MoodScreen: React.FC = () => {
   const displayedMood = getDisplayedMood();
   const workflow = displayedMood ? MOOD_WORKFLOWS[displayedMood] : null;
 
-  // If a mood is selected, show workflow options
-  if (workflow) {
+  // If workflow is active, show workflow options
+  if (showWorkflow && workflow) {
+    const WorkflowSvg = workflow.illustrationSvg;
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => setSelectedMood(null)} style={styles.backButton}>
+            <TouchableOpacity onPress={handleBackToSelection} style={styles.backButton}>
               <Text style={styles.backIcon}>←</Text>
             </TouchableOpacity>
             <Text style={styles.title}>{CONTENT.MOOD.title}</Text>
@@ -93,11 +100,9 @@ export const MoodScreen: React.FC = () => {
 
           {/* Mood Illustration */}
           <View style={styles.illustrationContainer}>
-            <Image
-              source={workflow.illustrationPng}
-              style={styles.illustration}
-              resizeMode="contain"
-            />
+            <View style={styles.illustration}>
+              <WorkflowSvg width={160} height={160} />
+            </View>
           </View>
 
           {/* Mood Display */}
@@ -234,6 +239,85 @@ const styles = StyleSheet.create({
   placeholder: {
     width: 40,
   },
+  illustrationContainer: {
+    alignItems: 'center',
+    marginVertical: spacing.xl,
+  },
+  illustration: {
+    width: 160,
+    height: 160,
+  },
+  selectedMoodContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  selectedMoodLabel: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.regular,
+    color: colors.text.secondary,
+  },
+  selectedMoodText: {
+    fontSize: typography.fontSize['3xl'],
+    fontFamily: typography.fontFamily.bold,
+    marginTop: spacing.xs,
+  },
+  affirmationContainer: {
+    backgroundColor: colors.primary[50],
+    marginHorizontal: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.xl,
+  },
+  affirmationText: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.primary[700],
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  nextActionsContainer: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xl,
+  },
+  nextActionsTitle: {
+    fontSize: typography.fontSize.lg,
+    fontFamily: typography.fontFamily.semibold,
+    color: colors.text.primary,
+    marginBottom: spacing.md,
+  },
+  nextActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.background.white,
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+    marginBottom: spacing.sm,
+  },
+  nextActionText: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.text.primary,
+  },
+  nextActionArrow: {
+    fontSize: 20,
+    color: colors.primary[600],
+  },
+  rescueContainer: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing['3xl'],
+  },
+  rescueButton: {
+    backgroundColor: colors.warning + '20',
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+    alignItems: 'center',
+  },
+  rescueButtonText: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.medium,
+    color: colors.warning,
+  },
   moodContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -276,99 +360,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.background.white,
-    padding: spacing.lg,
     borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   summaryEmoji: {
     fontSize: 32,
-    marginRight: spacing.md,
   },
   summaryLabel: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-  },
-  // Workflow view styles
-  illustrationContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing.xl,
-  },
-  illustration: {
-    width: 200,
-    height: 200,
-  },
-  selectedMoodContainer: {
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  selectedMoodLabel: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.text.secondary,
-    marginBottom: spacing.xs,
-  },
-  selectedMoodText: {
-    fontSize: typography.fontSize['3xl'],
-    fontFamily: typography.fontFamily.bold,
-  },
-  affirmationContainer: {
-    marginHorizontal: spacing.xl,
-    marginVertical: spacing.lg,
-    padding: spacing.lg,
-    backgroundColor: colors.primary[50],
-    borderRadius: borderRadius.xl,
-  },
-  affirmationText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.regular,
-    color: colors.primary[600],
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  nextActionsContainer: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.md,
-  },
-  nextActionsTitle: {
     fontSize: typography.fontSize.lg,
     fontFamily: typography.fontFamily.semibold,
     color: colors.text.primary,
-    marginBottom: spacing.md,
-  },
-  nextActionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.background.white,
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    marginBottom: spacing.md,
-  },
-  nextActionText: {
-    flex: 1,
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.medium,
-    color: colors.text.primary,
-  },
-  nextActionArrow: {
-    fontSize: 20,
-    color: colors.text.muted,
-    marginLeft: spacing.sm,
-  },
-  rescueContainer: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.xl,
-    marginBottom: spacing.xl,
-  },
-  rescueButton: {
-    backgroundColor: colors.error + '15',
-    padding: spacing.lg,
-    borderRadius: borderRadius.xl,
-    alignItems: 'center',
-  },
-  rescueButtonText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.semibold,
-    color: colors.error,
   },
 });

@@ -5,7 +5,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RouteProp } from '@react-navigation/native';
 import { TAB_BAR_CONFIG } from '@/config/navigation';
@@ -13,6 +13,19 @@ import { HomeScreen } from '@/layers/screens/HomeScreen';
 import { LoginScreen } from '@/layers/screens/LoginScreen';
 import { MoodScreen } from '@/layers/screens/MoodScreen';
 import { OnboardingScreen } from '@/layers/screens/OnboardingScreen';
+import { JourneyScreen } from '@/layers/screens/JourneyScreen';
+import { CommunityScreen } from '@/layers/screens/CommunityScreen';
+import { ProfileScreen } from '@/layers/screens/ProfileScreen';
+import { SignupScreen } from '@/layers/screens/SignupScreen';
+import { ChallengeScreen } from '@/layers/screens/ChallengeScreen';
+import { ChallengeDetailScreen } from '@/layers/screens/ChallengeDetailScreen';
+import { GuidedJournalScreen } from '@/layers/screens/GuidedJournalScreen';
+import { BreathingExerciseScreen } from '@/layers/screens/BreathingExerciseScreen';
+import { RescueSessionScreen } from '@/layers/screens/RescueSessionScreen';
+import { ReasonOfMoodScreen } from '@/layers/screens/ReasonOfMoodScreen';
+import { ReportsScreen } from '@/layers/screens/ReportsScreen';
+import { TherapistsScreen } from '@/layers/screens/TherapistsScreen';
+import { SettingsScreen } from '@/layers/screens/SettingsScreen';
 import { colors } from '@/config/theme';
 import { SvgIcon } from '@/components/common/SvgIcon';
 
@@ -24,28 +37,30 @@ type TabParamList = {
   profile: undefined;
 };
 
-type AuthParamList = {
+type RootStackParamList = {
+  // Auth flow
   Onboarding: undefined;
   Login: undefined;
   Signup: undefined;
+  // Main flow
+  MainTabs: undefined;
+  Journey: undefined;
+  Community: undefined;
+  Profile: undefined;
+  Challenge: undefined;
+  ChallengeDetail: { challengeId: string };
+  GuidedJournal: { activityType?: string } | undefined;
+  BreathingExercise: undefined;
+  RescueSession: undefined;
+  ReasonOfMood: { mood: string };
+  Reports: undefined;
+  Therapists: undefined;
+  Settings: undefined;
 };
 
-const createPlaceholderScreen = (name: string) => {
-  const Screen: React.FC = () => (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>{name} Screen</Text>
-    </View>
-  );
-  Screen.displayName = `${name}Screen`;
-  return Screen;
-};
 
-const JourneyScreen = createPlaceholderScreen('Journey');
-const CommunityScreen = createPlaceholderScreen('Community');
-const ProfileScreen = createPlaceholderScreen('Profile');
-const SignupScreen = createPlaceholderScreen('Signup');
 
-const Stack = createStackNavigator<AuthParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
 // Tab bar icons using SVG components
@@ -62,7 +77,7 @@ const TabBarIcon: React.FC<{ name: string; focused: boolean }> = ({ name, focuse
   return (
     <View style={{ width: 24, height: 24, alignItems: 'center', justifyContent: 'center' }}>
       <SvgIcon 
-        name={iconName as any} 
+        name={iconName} 
         size={24} 
         color={focused ? colors.primary[600] : colors.text.muted} 
       />
@@ -106,11 +121,32 @@ const AuthStack: React.FC = () => {
   );
 };
 
+// Main Stack that wraps the tabs and provides access to all screens
+const MainStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="Journey" component={JourneyScreen} />
+      <Stack.Screen name="Community" component={CommunityScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Challenge" component={ChallengeScreen} />
+      <Stack.Screen name="ChallengeDetail" component={ChallengeDetailScreen} />
+      <Stack.Screen name="GuidedJournal" component={GuidedJournalScreen} />
+      <Stack.Screen name="BreathingExercise" component={BreathingExerciseScreen} />
+      <Stack.Screen name="RescueSession" component={RescueSessionScreen} />
+      <Stack.Screen name="ReasonOfMood" component={ReasonOfMoodScreen} />
+      <Stack.Screen name="Reports" component={ReportsScreen} />
+      <Stack.Screen name="Therapists" component={TherapistsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+    </Stack.Navigator>
+  );
+};
+
 const AppNavigator: React.FC<{ initialScreen: string }> = ({ initialScreen }) => {
   return (
     <NavigationContainer>
       {initialScreen === 'main' ? (
-        <MainTabs />
+        <MainStack />
       ) : (
         <AuthStack />
       )}
