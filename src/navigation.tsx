@@ -12,7 +12,6 @@ import { TAB_BAR_CONFIG } from '@/config/navigation';
 import { HomeScreen } from '@/layers/screens/HomeScreen';
 import { LoginScreen } from '@/layers/screens/LoginScreen';
 import { MoodScreen } from '@/layers/screens/MoodScreen';
-import { OnboardingScreen } from '@/layers/screens/OnboardingScreen';
 import { JourneyScreen } from '@/layers/screens/JourneyScreen';
 import { CommunityScreen } from '@/layers/screens/CommunityScreen';
 import { ProfileScreen } from '@/layers/screens/ProfileScreen';
@@ -39,7 +38,6 @@ type TabParamList = {
 
 type RootStackParamList = {
   // Auth flow
-  Onboarding: undefined;
   Login: undefined;
   Signup: undefined;
   // Main flow
@@ -114,7 +112,6 @@ const MainTabs: React.FC = () => {
 const AuthStack: React.FC = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
     </Stack.Navigator>
