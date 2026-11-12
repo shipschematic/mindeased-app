@@ -1,4 +1,4 @@
 // Execute Layer Index
-export * from './supabase';
+export * from './firebase';
 export * from './env';
 export * from './logic';

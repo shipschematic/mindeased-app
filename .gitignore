@@ -6,6 +6,9 @@ node_modules/
 dist/
 web-build/
 
+# Firebase
+.firebase/
+
 # Native
 *.orig.*
 *.jks

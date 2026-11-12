@@ -2,7 +2,7 @@
 // Single Source of Truth - Minimal references, derived values
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import type {
   MoodType,
   User,
@@ -82,6 +82,7 @@ export interface MentalHealthStore extends UserState, MoodState, AppState, DataS
   setUser: (user: User) => void;
   clearUser: () => void;
   completeOnboarding: () => void;
+  resetUserData: () => void;
 
   // Mood Actions
   setMood: (mood: MoodType, reasons?: string[]) => void;
@@ -199,7 +200,63 @@ const initialAchievements: Achievement[] = [
   { id: 'a4', title: 'Health and Fitness', subtitle: 'Achieve daily challenge 3 times a day', progress: 2, total: 10, icon: 'heart' },
 ];
 
+// ============= PER-USER STORAGE CONSTANTS =============
+// Each signed-in account gets its own localStorage bucket so two Google accounts
+// on the same browser never see each other's mood history or journal.
+const STORAGE_BASE = 'mental-health-storage';
+const GUEST_STORAGE = `${STORAGE_BASE}:guest`;
+let activeStorageName = STORAGE_BASE;
+
+const storageNameFor = (uid: string | null) =>
+  uid ? `${STORAGE_BASE}:${uid}` : GUEST_STORAGE;
+
+const isGuestBucket = (name: string) =>
+  name === STORAGE_BASE || name === GUEST_STORAGE;
+
+const hasLocalStorage = () =>
+  typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+// Writes are suspended while switching buckets, so resetting in-memory state
+// cannot overwrite the account we are leaving.
+let suppressWrites = false;
+const memoryFallback = new Map<string, string>();
+
+const bucketStorage = createJSONStorage(() => ({
+  getItem: (name: string) => {
+    if (hasLocalStorage()) return window.localStorage.getItem(name);
+    return memoryFallback.get(name) ?? null;
+  },
+  setItem: (name: string, value: string) => {
+    if (suppressWrites) return;
+    if (hasLocalStorage()) window.localStorage.setItem(name, value);
+    else memoryFallback.set(name, value);
+  },
+  removeItem: (name: string) => {
+    if (hasLocalStorage()) window.localStorage.removeItem(name);
+    else memoryFallback.delete(name);
+  },
+}));
+
 // ============= STORE CREATION =============
+/** Fields that persist locally and mirror to Firestore. */
+export function persistedSnapshot(state: MentalHealthStore) {
+  return {
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    onboardingCompleted: state.onboardingCompleted,
+    currentMood: state.currentMood,
+    currentMoodReason: state.currentMoodReason,
+    moodHistory: state.moodHistory,
+    overallProgress: state.overallProgress,
+    quizCompleted: state.quizCompleted,
+    quizResponses: state.quizResponses,
+    quizResult: state.quizResult,
+    journalEntries: state.journalEntries,
+    journeyTasks: state.journeyTasks,
+    challenges: state.challenges,
+  };
+}
+
 export const useStore = create<MentalHealthStore>()(
   persist(
     (set) => ({
@@ -245,6 +302,20 @@ export const useStore = create<MentalHealthStore>()(
       setUser: (user) => set({ user, isAuthenticated: true }),
       clearUser: () => set({ user: null, isAuthenticated: false }),
       completeOnboarding: () => set({ onboardingCompleted: true }),
+      resetUserData: () =>
+        set({
+          currentMood: null,
+          currentMoodReason: null,
+          moodHistory: [],
+          overallProgress: 60,
+          quizCompleted: false,
+          quizResponses: {},
+          quizResult: undefined,
+          journalEntries: [],
+          journeyTasks: initialJourneyTasks,
+          challenges: initialChallenges,
+          rescueSession: null,
+        }),
 
       setMood: (mood, reasons) =>
         set((state) => ({
@@ -315,23 +386,67 @@ export const useStore = create<MentalHealthStore>()(
         })),
     }),
     {
-      name: 'mental-health-storage',
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-        onboardingCompleted: state.onboardingCompleted,
-        currentMood: state.currentMood,
-        currentMoodReason: state.currentMoodReason,
-        moodHistory: state.moodHistory,
-        overallProgress: state.overallProgress,
-        quizCompleted: state.quizCompleted,
-        quizResponses: state.quizResponses,
-        quizResult: state.quizResult,
-        journalEntries: state.journalEntries,
-      }),
+      name: STORAGE_BASE,
+      storage: bucketStorage,
+      partialize: (state) => persistedSnapshot(state),
     }
   )
 );
+
+// ============= PER-USER STORAGE SWITCH =============
+export async function switchUserStorage(uid: string | null): Promise<void> {
+  const nextName = storageNameFor(uid);
+  if (nextName === activeStorageName) return;
+
+  // The first hydration from the default bucket is async. Let it finish,
+  // otherwise it can overwrite the bucket loaded here with stale defaults.
+  if (!useStore.persist.hasHydrated()) {
+    await new Promise<void>((resolve) => {
+      const unsubscribe = useStore.persist.onFinishHydration(() => {
+        unsubscribe();
+        resolve();
+      });
+    });
+  }
+
+  // Carry only onboarding/quiz answers taken before first sign-in into the new
+  // bucket. Mood, journal, and progress never travel between accounts.
+  const seedFromGuest = uid ? isGuestBucket(activeStorageName) : activeStorageName === STORAGE_BASE;
+  if (hasLocalStorage() && seedFromGuest) {
+    const guestData = window.localStorage.getItem(activeStorageName);
+    if (guestData && !window.localStorage.getItem(nextName)) {
+      try {
+        const parsed = JSON.parse(guestData);
+        const allowed = [
+          'onboardingCompleted',
+          'quizCompleted',
+          'quizResponses',
+          'quizResult',
+        ];
+        const seededState: Record<string, unknown> = {};
+        for (const key of allowed) {
+          if (key in parsed.state) seededState[key] = parsed.state[key];
+        }
+        window.localStorage.setItem(
+          nextName,
+          JSON.stringify({ state: seededState, version: parsed.version ?? 0 })
+        );
+      } catch {
+        // Corrupt guest data: start the new bucket clean instead of crashing.
+      }
+    }
+  }
+
+  activeStorageName = nextName;
+  suppressWrites = true;
+  try {
+    useStore.getState().resetUserData();
+    useStore.persist.setOptions({ name: nextName });
+    await useStore.persist.rehydrate();
+  } finally {
+    suppressWrites = false;
+  }
+}
 
 // ============= SELECTORS =============
 export const selectUser = (state: MentalHealthStore) => state.user;
