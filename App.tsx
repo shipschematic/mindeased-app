@@ -1,4 +1,5 @@
 import React from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
@@ -24,7 +25,9 @@ import { BreathingExerciseScreen } from './src/layers/screens/BreathingExerciseS
 import { RescueSessionScreen } from './src/layers/screens/RescueSessionScreen';
 import { ChallengeScreen } from './src/layers/screens/ChallengeScreen';
 
-import { useStore, selectIsAuthenticated, selectOnboardingCompleted } from './src/state/store';
+import { useStore, selectIsAuthenticated, selectOnboardingCompleted, switchUserStorage } from '@/state/store';
+import { subscribeToFirebaseAuth } from '@/execute/firebase';
+import { startCloudSync, stopCloudSync } from '@/execute/cloud-sync';
 import { colors, typography } from './src/config/theme';
 import { CONTENT } from './src/config/content';
 
@@ -51,9 +54,9 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 // Auth Stack
-function AuthStack() {
+function AuthStack({ initialRouteName = 'Quiz' }: { initialRouteName?: 'Quiz' | 'Login' }) {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName={initialRouteName} screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Quiz" component={QuizScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
@@ -124,13 +127,20 @@ function RootNavigator() {
   const quizCompleted = useStore((state: any) => (state as any).quizCompleted);
 
   // Show quiz for new users who haven't completed it
-  const showQuiz = !isAuthenticated && !onboardingCompleted && !quizCompleted;
-  // Show onboarding for returning users who haven't completed
-  const showAuth = !isAuthenticated && !onboardingCompleted;
+  const showQuiz = !onboardingCompleted && !quizCompleted;
+  // After onboarding, require sign-in before entering the app
+  const showAuth = !showQuiz && !isAuthenticated;
 
   return (
     <NavigationContainer>
-      {showQuiz ? <AuthStack /> : showAuth ? <AuthStack /> : <AppStack />}
+      {showQuiz || showAuth ? (
+        <AuthStack
+          key={showQuiz ? 'quiz' : 'login'}
+          initialRouteName={showQuiz ? 'Quiz' : 'Login'}
+        />
+      ) : (
+        <AppStack />
+      )}
     </NavigationContainer>
   );
 }
@@ -167,17 +177,41 @@ class ErrorBoundary extends React.Component<
 }
 
 export default function App() {
+  React.useEffect(() => {
+    // Firebase is the identity source of truth for the hosted web build.
+    // Switching accounts also switches the localStorage bucket holding user data.
+    const unsubscribe = subscribeToFirebaseAuth(async (user) => {
+      if (user) {
+        await switchUserStorage(user.id);
+        useStore.getState().setUser(user);
+        await startCloudSync(user.id);
+      } else {
+        await stopCloudSync();
+        await switchUserStorage(null);
+        if (useStore.getState().isAuthenticated) {
+          useStore.getState().clearUser();
+        }
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   return (
-    <ErrorBoundary>
-      <SafeAreaProvider>
-        <StatusBar style="dark" />
-        <RootNavigator />
-      </SafeAreaProvider>
-    </ErrorBoundary>
+    <GestureHandlerRootView style={styles.root}>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <StatusBar style="dark" />
+          <RootNavigator />
+        </SafeAreaProvider>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   tabBar: {
     backgroundColor: colors.background.white,
     borderTopWidth: 1,

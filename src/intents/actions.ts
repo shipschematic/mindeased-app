@@ -1,6 +1,6 @@
 // Intent Layer - Action Creators
 // UI expresses intent through these actions
-// Wires to Execute Layer (supabase services)
+// Wires to Execute Layer (Firebase auth, local Zustand persistence)
 
 import type {
   MoodType,
@@ -9,16 +9,13 @@ import type {
   ScreenId,
   TabId,
 } from '@/state/types';
-import { useStore } from '@/state/store';
+import { useStore, switchUserStorage } from '@/state/store';
 import {
-  authService,
-  moodService,
-  challengeService,
-  postService,
-  therapistService,
-  appointmentService,
-  achievementService,
-} from '@/execute/supabase';
+  describeFirebaseError,
+  firebaseSignOut,
+  signInWithGoogle,
+} from '@/execute/firebase';
+import { stopCloudSync } from '@/execute/cloud-sync';
 
 // ============= AUTH INTENTS =============
 export interface AuthIntents {
@@ -61,42 +58,20 @@ export interface AllIntents {
 export const createIntents = (): AllIntents => {
   return {
     auth: {
-      login: async (credentials) => {
+      login: async () => {
+        const message =
+          'Email sign-in is not available yet. Use Continue with Google.';
         const store = useStore.getState();
-        store.setLoading(true);
-        store.setError(null);
-
-        try {
-          const result = await authService.login(credentials.email, credentials.password);
-          if (!result.success || !result.data) {
-            throw new Error(result.error || 'Login failed');
-          }
-          store.setUser(result.data);
-        } catch (error) {
-          store.setError(error instanceof Error ? error.message : 'Login failed');
-          throw error;
-        } finally {
-          store.setLoading(false);
-        }
+        store.setError(message);
+        throw new Error(message);
       },
 
-      signup: async (data) => {
+      signup: async () => {
+        const message =
+          'Account creation uses Google. Tap Continue with Google to create your account.';
         const store = useStore.getState();
-        store.setLoading(true);
-        store.setError(null);
-
-        try {
-          const result = await authService.signup(data.email, data.password, data.name);
-          if (!result.success || !result.data) {
-            throw new Error(result.error || 'Signup failed');
-          }
-          store.setUser(result.data);
-        } catch (error) {
-          store.setError(error instanceof Error ? error.message : 'Signup failed');
-          throw error;
-        } finally {
-          store.setLoading(false);
-        }
+        store.setError(message);
+        throw new Error(message);
       },
 
       logout: async () => {
@@ -104,15 +79,14 @@ export const createIntents = (): AllIntents => {
         store.setLoading(true);
 
         try {
-          const result = await authService.logout();
-          if (!result.success) {
-            throw new Error(result.error || 'Logout failed');
-          }
-          store.clearUser();
+          // Flush the cloud copy while the Firebase session is still valid.
+          await stopCloudSync();
+          await firebaseSignOut();
         } catch (error) {
-          store.setError(error instanceof Error ? error.message : 'Logout failed');
-          throw error;
+          console.warn('[Auth] Firebase sign-out failed:', describeFirebaseError(error));
         } finally {
+          await switchUserStorage(null);
+          store.clearUser();
           store.setLoading(false);
         }
       },
@@ -123,13 +97,14 @@ export const createIntents = (): AllIntents => {
         store.setError(null);
 
         try {
-          const result = await authService.socialLogin(provider);
-          if (!result.success) {
-            throw new Error(result.error || 'Social login failed');
+          if (provider !== 'google') {
+            throw new Error(`${provider} sign-in is not configured yet.`);
           }
-          // OAuth redirects - session will be handled by auth state listener
+          const user = await signInWithGoogle();
+          await switchUserStorage(user.id);
+          store.setUser(user);
         } catch (error) {
-          store.setError(error instanceof Error ? error.message : 'Social login failed');
+          store.setError(describeFirebaseError(error));
           throw error;
         } finally {
           store.setLoading(false);
@@ -139,23 +114,9 @@ export const createIntents = (): AllIntents => {
 
     mood: {
       logMood: async (mood, reasons) => {
-        const store = useStore.getState();
-        const user = store.user;
-
-        // Always update local state immediately for responsive UI
-        store.setMood(mood, reasons);
-
-        // Sync to backend if authenticated
-        if (user) {
-          try {
-            const result = await moodService.logMood(mood, user.id, reasons);
-            if (!result.success) {
-              console.warn('Failed to sync mood to server:', result.error);
-            }
-          } catch (error) {
-            console.warn('Mood sync error:', error);
-          }
-        }
+        // Mood data is stored locally (Zustand + AsyncStorage persist).
+        // Firebase/Firestore sync can be added later.
+        useStore.getState().setMood(mood, reasons);
       },
 
       setMood: (mood) => {
@@ -163,21 +124,8 @@ export const createIntents = (): AllIntents => {
       },
 
       addMoodEntry: async (mood, note) => {
-        const store = useStore.getState();
-        const user = store.user;
-
-        store.setMood(mood, note ? [note] : undefined);
-
-        if (user) {
-          try {
-            const result = await moodService.logMood(mood, user.id, note ? [note] : undefined);
-            if (!result.success) {
-              console.warn('Failed to sync mood entry:', result.error);
-            }
-          } catch (error) {
-            console.warn('Mood entry sync error:', error);
-          }
-        }
+        // Local-only for now: entry persists with the rest of the Zustand state.
+        useStore.getState().setMood(mood, note ? [note] : undefined);
       },
 
       clearMood: () => {
