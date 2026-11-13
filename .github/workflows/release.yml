@@ -38,14 +38,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci --no-audit --no-fund
 
       - uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 27.9.0
           token: ${{ secrets.EXPO_TOKEN }}
 
       # Writes the APK to the EAS build page; download link is printed in the log.
@@ -70,14 +70,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci --no-audit --no-fund
 
       - uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 27.9.0
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build iOS
@@ -93,7 +93,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci --no-audit --no-fund
