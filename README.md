@@ -168,7 +168,10 @@ Firebase project: `mindeased`
    - Android OAuth client: `521906147554-7otttf35bugdcgg1aad9d3q30nqtaotp.apps.googleusercontent.com`
    - iOS OAuth client: `521906147554-msr1f4vl7cdjktv25c1akg2djddnva3s.apps.googleusercontent.com`
    - Web OAuth client (`webClientId`): `521906147554-kpusmu6v2n11u9qv30qchg0sqj68mtul.apps.googleusercontent.com`
-5. Register every signing certificate SHA-1/SHA-256 in Firebase (Android app → SHA certificate fingerprints), otherwise Android sign-in fails with `DEVELOPER_ERROR`. The debug keystore is already registered; add the EAS release keystore hash before shipping.
+5. Register every signing certificate SHA-1/SHA-256 in Firebase (Android app → SHA certificate fingerprints), otherwise Android sign-in fails with `DEVELOPER_ERROR`. Debug and EAS release hashes are registered:
+   - Debug SHA-1 `D8:4C:55:F2:18:50:D0:23:AD:B6:4E:D8:27:BB:26:48:04:7A:18:DA`
+   - Release SHA-1 `65:3D:C3:B0:98:E2:86:C4:AE:72:81:0A:C7:1F:33:72:3A:70:81:78`
+   - Release SHA-256 `3A:9B:BE:D4:F8:BA:5E:F7:9A:DF:69:B5:4E:00:ED:09:84:F0:C7:D1:87:44:70:B8:F3:AC:9D:B4:3D:98:DF:F9`
 6. Auth sessions persist with AsyncStorage on native and localStorage on web. App data buckets persist the same way.
 
 ### Web Deploy
