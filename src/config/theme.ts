@@ -1,5 +1,5 @@
 // Single Source of Truth - Theme Configuration
-// Extracted from Figma Design System - Mental Health App
+// Extracted from Figma Design System - Mindeased
 
 export const colors = {
   // Primary - Olive Green (from Figma)

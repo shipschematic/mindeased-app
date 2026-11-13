@@ -1,4 +1,4 @@
-# Mental Health App - Config-Driven Architecture
+# Mindeased - Config-Driven Architecture
 
 ## 📐 Architecture Overview
 
@@ -57,7 +57,7 @@ This app follows a strict **Config → State → Intent → Execute** pipeline w
 ## 📁 Project Structure
 
 ```
-mental-health-app/
+mindeased-app/
 ├── src/
 │   ├── config/                    # 🔑 SINGLE SOURCE OF TRUTH
 │   │   ├── theme.ts              # Colors, typography, spacing
@@ -140,14 +140,78 @@ mental-health-app/
 - Node.js 18+
 - npm or yarn
 - Expo CLI
+- Firebase project (`mindeased`)
 - Supabase account
 
 ### Installation
 
 ```bash
-cd mental-health-app
+git clone https://github.com/shipblueprint/mindeased-app.git
+cd mindeased-app
 npm install
 ```
+
+### Setup Firebase
+
+Firebase project: `mindeased`
+
+| Platform | Firebase app | ID |
+| --- | --- | --- |
+| Web | `mindeased-web` | `1:521906147554:web:4a7c5e1cf2df088ff1cebb` |
+| Android | `Mindeased` (`com.mindeased.app`) | `1:521906147554:android:54782bbfbb3557ddf1cebb` |
+| iOS | `Mindeased` (`com.mindeased.app`) | `1:521906147554:ios:b4a1d056c52a99cbf1cebb` |
+
+1. Web config lives in `.env` (see `.env.example`)
+2. Native config lives in `google-services.json` and `GoogleService-Info.plist`
+3. Google sign-in provider is enabled; add every hosting and OAuth domain under Authentication → Settings → Authorized domains
+4. Native Google sign-in uses `@react-native-google-signin/google-signin`:
+   - Android OAuth client: `521906147554-7otttf35bugdcgg1aad9d3q30nqtaotp.apps.googleusercontent.com`
+   - iOS OAuth client: `521906147554-msr1f4vl7cdjktv25c1akg2djddnva3s.apps.googleusercontent.com`
+   - Web OAuth client (`webClientId`): `521906147554-kpusmu6v2n11u9qv30qchg0sqj68mtul.apps.googleusercontent.com`
+5. Register every signing certificate SHA-1/SHA-256 in Firebase (Android app → SHA certificate fingerprints), otherwise Android sign-in fails with `DEVELOPER_ERROR`. The debug keystore is already registered; add the EAS release keystore hash before shipping.
+6. Auth sessions persist with AsyncStorage on native and localStorage on web. App data buckets persist the same way.
+
+### Web Deploy
+
+```bash
+npm run build:web
+firebase deploy --only hosting:app
+```
+
+Live site: https://mindeased-app.web.app
+
+### Android APK (direct download)
+
+```bash
+eas build --profile preview --platform android
+```
+
+The build page provides an installable APK. Share that link directly; no Play Store account needed. Users must allow installs from unknown sources on first install.
+
+Register the release keystore SHA-1/SHA-256 in Firebase (Android app → SHA certificate fingerprints) after the first build, or Google sign-in fails with `DEVELOPER_ERROR`. Find it with:
+
+```bash
+eas credentials --platform android
+```
+
+### GitHub Actions Release
+
+`.github/workflows/release.yml` builds Android, iOS, and web.
+
+Triggers:
+- Manual: Actions → Release → Run workflow (choose `all`, `android`, `ios`, or `web`).
+- Tag push: `git tag v1.0.0 && git push origin v1.0.0`.
+
+Required repository secrets:
+- `EXPO_TOKEN` — create at https://expo.dev/settings/access-tokens
+- `FIREBASE_SERVICE_ACCOUNT_MINDEASED` — Firebase console → Project settings → Service accounts → Generate new private key. Grant Firebase Hosting Admin.
+
+iOS is skipped until Apple credentials exist. To enable it:
+1. Enroll in the Apple Developer Program.
+2. Run `eas credentials --platform ios` once and let EAS create the certificate and provisioning profile.
+3. Add repository variable `ENABLE_IOS_BUILD` with value `true` (Settings → Secrets and variables → Actions → Variables).
+
+Without Apple credentials the iOS job fails by design; it is gated so Android and web keep releasing.
 
 ### Setup Supabase
 
@@ -173,7 +237,7 @@ Press `i` for iOS simulator or `a` for Android emulator.
 - ✅ Zustand state management
 - ✅ Intent dispatcher pattern
 - ✅ Supabase integration
-- ✅ Authentication (Email/Password, Social)
+- ✅ Authentication (Email/Password, Google via Firebase on web, Android, and iOS)
 - ✅ Mood tracking
 - ✅ Home screen with quick actions
 - ✅ Login/Signup screens

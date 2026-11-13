@@ -121,7 +121,7 @@ export const TRANSITIONS = {
 
 // Deep linking configuration
 export const DEEP_LINKING_CONFIG = {
-  prefixes: ['mentalhealth://', 'https://mentalhealth.app'],
+  prefixes: ['mindeased://', 'https://mindeased.app'],
   config: {
     screens: {
       home: 'home',

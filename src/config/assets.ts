@@ -1,6 +1,6 @@
 // Single Source of Truth - Asset Registry
 // All images, icons, and illustrations
-// Updated to use Airaa icon set and mental illustrations
+// Updated to use Airaa icon set and Mindeased illustrations
 
 // Import mental illustrations (SVG transformer enabled)
 const achievementIllustration = require('@assets/mental/SVG/achievement.svg').default;
@@ -13,7 +13,7 @@ const supportIllustration = require('@assets/mental/SVG/support.svg').default;
 const putTogetherIllustration = require('@assets/mental/SVG/put together.svg').default;
 
 export const assets = {
-  // Illustrations (SVG) - Mental health illustrations
+  // Illustrations (SVG) - Mindeased illustrations
   illustrations: {
     exercise: musicMeditationIllustration,
     habit: putTogetherIllustration,

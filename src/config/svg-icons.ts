@@ -16,7 +16,7 @@ export { default as MoodSadSvg } from '@assets/icons/mood-sad.svg';
 export { default as MoodWorriedSvg } from '@assets/icons/mood-worried.svg';
 export { default as MoodDepressSvg } from '@assets/icons/mood-depress.svg';
 
-// Mental Health Illustrations (from assets/mental/SVG)
+// Mindeased Illustrations (from assets/mental/SVG)
 export { default as ThoughtsSvg } from '@assets/mental/SVG/thoughts.svg';
 export { default as AchievementSvg } from '@assets/mental/SVG/achievement.svg';
 export { default as AskingAboutFeelingsSvg } from '@assets/mental/SVG/asking about feelings.svg';
