@@ -19,7 +19,7 @@
 
 ### 1. Install Dependencies
 ```bash
-cd mental-health-app
+cd mindeased-app
 npm install
 ```
 

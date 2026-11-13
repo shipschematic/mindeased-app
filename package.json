@@ -1,5 +1,5 @@
 {
-  "name": "mental-health-app",
+  "name": "mindeased-app",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-google-signin/google-signin": "^17.0.0",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "521906147554",
+    "project_id": "mindeased",
+    "storage_bucket": "mindeased.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521906147554:android:54782bbfbb3557ddf1cebb",
+        "android_client_info": {
+          "package_name": "com.mindeased.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521906147554-7otttf35bugdcgg1aad9d3q30nqtaotp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mindeased.app",
+            "certificate_hash": "d84c55f21850d023adb64ed827bb2648047a18da"
+          }
+        },
+        {
+          "client_id": "521906147554-kpusmu6v2n11u9qv30qchg0sqj68mtul.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU45DHrw-tiSVOkmqt3D32kz623cPdixo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521906147554-kpusmu6v2n11u9qv30qchg0sqj68mtul.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "521906147554-msr1f4vl7cdjktv25c1akg2djddnva3s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mindeased.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -25,7 +25,7 @@ import BadMoodSvg from '@assets/mental/SVG/bad mood.svg';
 import OverloadedSvg from '@assets/mental/SVG/overloaded.svg';
 import MoodRangeSvg from '@assets/mental/SVG/mood range.svg';
 
-// Mood config with mental health SVG assets
+// Mood config with Mindeased SVG assets
 const MOOD_CONFIG: Array<{ type: MoodType; emoji: string; color: string; label: string; SvgComponent: React.ComponentType<any> }> = [
   { type: 'love', emoji: '❤️', color: colors.mood.love, label: 'Love', SvgComponent: GoodMoodSvg },
   { type: 'good', emoji: '😊', color: colors.mood.good, label: 'Good', SvgComponent: GoodMoodSvg },

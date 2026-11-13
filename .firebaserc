@@ -1,5 +1,12 @@
 {
   "projects": {
-    "default": "app-mentalhealth"
+    "default": "mindeased"
+  },
+  "targets": {
+    "mindeased": {
+      "hosting": {
+        "app": ["mindeased-app"]
+      }
+    }
   }
 }

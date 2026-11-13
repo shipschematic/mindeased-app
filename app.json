@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "Mental Health App",
+    "name": "Mindeased",
     "slug": "mental-health-app",
     "version": "1.0.0",
+    "scheme": "mindeased",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,14 +12,18 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.mentalhealth.app"
+      "bundleIdentifier": "com.mindeased.app",
+      "buildNumber": "1",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mentalhealth.app"
+      "package": "com.mindeased.app",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -33,11 +38,18 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.521906147554-msr1f4vl7cdjktv25c1akg2djddnva3s"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
     },
+    "owner": "shipblueprint",
     "extra": {
       "eas": {
         "projectId": "8f6f470c-3882-416a-9d4f-036b2914cd19"

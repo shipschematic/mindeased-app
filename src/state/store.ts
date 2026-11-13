@@ -3,6 +3,7 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
   MoodType,
   User,
@@ -50,7 +51,7 @@ interface DataState {
 }
 
 // ============= COMBINED STORE INTERFACE =============
-export interface MentalHealthStore extends UserState, MoodState, AppState, DataState {
+export interface MindeasedStore extends UserState, MoodState, AppState, DataState {
   // Quiz State
   quizCompleted: boolean;
   quizResponses: Record<string, any>;
@@ -216,30 +217,44 @@ const isGuestBucket = (name: string) =>
 const hasLocalStorage = () =>
   typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
+// Web keeps its per-account buckets in localStorage; native uses AsyncStorage.
+const readStoredValue = async (name: string): Promise<string | null> => {
+  if (hasLocalStorage()) return window.localStorage.getItem(name);
+  return AsyncStorage.getItem(name);
+};
+
+const writeStoredValue = async (name: string, value: string): Promise<void> => {
+  if (hasLocalStorage()) {
+    window.localStorage.setItem(name, value);
+    return;
+  }
+  await AsyncStorage.setItem(name, value);
+};
+
+const removeStoredValue = async (name: string): Promise<void> => {
+  if (hasLocalStorage()) {
+    window.localStorage.removeItem(name);
+    return;
+  }
+  await AsyncStorage.removeItem(name);
+};
+
 // Writes are suspended while switching buckets, so resetting in-memory state
 // cannot overwrite the account we are leaving.
 let suppressWrites = false;
-const memoryFallback = new Map<string, string>();
 
 const bucketStorage = createJSONStorage(() => ({
-  getItem: (name: string) => {
-    if (hasLocalStorage()) return window.localStorage.getItem(name);
-    return memoryFallback.get(name) ?? null;
-  },
-  setItem: (name: string, value: string) => {
+  getItem: (name: string) => readStoredValue(name),
+  setItem: async (name: string, value: string) => {
     if (suppressWrites) return;
-    if (hasLocalStorage()) window.localStorage.setItem(name, value);
-    else memoryFallback.set(name, value);
+    await writeStoredValue(name, value);
   },
-  removeItem: (name: string) => {
-    if (hasLocalStorage()) window.localStorage.removeItem(name);
-    else memoryFallback.delete(name);
-  },
+  removeItem: (name: string) => removeStoredValue(name),
 }));
 
 // ============= STORE CREATION =============
 /** Fields that persist locally and mirror to Firestore. */
-export function persistedSnapshot(state: MentalHealthStore) {
+export function persistedSnapshot(state: MindeasedStore) {
   return {
     user: state.user,
     isAuthenticated: state.isAuthenticated,
@@ -257,7 +272,7 @@ export function persistedSnapshot(state: MentalHealthStore) {
   };
 }
 
-export const useStore = create<MentalHealthStore>()(
+export const useStore = create<MindeasedStore>()(
   persist(
     (set) => ({
       // User State
@@ -412,9 +427,9 @@ export async function switchUserStorage(uid: string | null): Promise<void> {
   // Carry only onboarding/quiz answers taken before first sign-in into the new
   // bucket. Mood, journal, and progress never travel between accounts.
   const seedFromGuest = uid ? isGuestBucket(activeStorageName) : activeStorageName === STORAGE_BASE;
-  if (hasLocalStorage() && seedFromGuest) {
-    const guestData = window.localStorage.getItem(activeStorageName);
-    if (guestData && !window.localStorage.getItem(nextName)) {
+  if (seedFromGuest) {
+    const guestData = await readStoredValue(activeStorageName);
+    if (guestData && !(await readStoredValue(nextName))) {
       try {
         const parsed = JSON.parse(guestData);
         const allowed = [
@@ -427,7 +442,7 @@ export async function switchUserStorage(uid: string | null): Promise<void> {
         for (const key of allowed) {
           if (key in parsed.state) seededState[key] = parsed.state[key];
         }
-        window.localStorage.setItem(
+        await writeStoredValue(
           nextName,
           JSON.stringify({ state: seededState, version: parsed.version ?? 0 })
         );
@@ -449,28 +464,28 @@ export async function switchUserStorage(uid: string | null): Promise<void> {
 }
 
 // ============= SELECTORS =============
-export const selectUser = (state: MentalHealthStore) => state.user;
-export const selectIsAuthenticated = (state: MentalHealthStore) => state.isAuthenticated;
-export const selectOnboardingCompleted = (state: MentalHealthStore) => state.onboardingCompleted;
+export const selectUser = (state: MindeasedStore) => state.user;
+export const selectIsAuthenticated = (state: MindeasedStore) => state.isAuthenticated;
+export const selectOnboardingCompleted = (state: MindeasedStore) => state.onboardingCompleted;
 
-export const selectCurrentMood = (state: MentalHealthStore) => state.currentMood;
-export const selectMoodHistory = (state: MentalHealthStore) => state.moodHistory;
+export const selectCurrentMood = (state: MindeasedStore) => state.currentMood;
+export const selectMoodHistory = (state: MindeasedStore) => state.moodHistory;
 
-export const selectCurrentScreen = (state: MentalHealthStore) => state.currentScreen;
-export const selectActiveTab = (state: MentalHealthStore) => state.activeTab;
-export const selectIsLoading = (state: MentalHealthStore) => state.loading;
-export const selectError = (state: MentalHealthStore) => state.error;
+export const selectCurrentScreen = (state: MindeasedStore) => state.currentScreen;
+export const selectActiveTab = (state: MindeasedStore) => state.activeTab;
+export const selectIsLoading = (state: MindeasedStore) => state.loading;
+export const selectError = (state: MindeasedStore) => state.error;
 
-export const selectJourneyTasks = (state: MentalHealthStore) => state.journeyTasks;
-export const selectChallenges = (state: MentalHealthStore) => state.challenges;
-export const selectCommunityPosts = (state: MentalHealthStore) => state.communityPosts;
-export const selectCommunityChannels = (state: MentalHealthStore) => state.communityChannels;
-export const selectTherapists = (state: MentalHealthStore) => state.therapists;
-export const selectAchievements = (state: MentalHealthStore) => state.achievements;
-export const selectOverallProgress = (state: MentalHealthStore) => state.overallProgress;
+export const selectJourneyTasks = (state: MindeasedStore) => state.journeyTasks;
+export const selectChallenges = (state: MindeasedStore) => state.challenges;
+export const selectCommunityPosts = (state: MindeasedStore) => state.communityPosts;
+export const selectCommunityChannels = (state: MindeasedStore) => state.communityChannels;
+export const selectTherapists = (state: MindeasedStore) => state.therapists;
+export const selectAchievements = (state: MindeasedStore) => state.achievements;
+export const selectOverallProgress = (state: MindeasedStore) => state.overallProgress;
 
 // Derived selectors
-export const selectJourneySections = (state: MentalHealthStore) => {
+export const selectJourneySections = (state: MindeasedStore) => {
   const sections = [
     { id: 'morning', title: 'Morning task', tasks: state.journeyTasks.filter((t) => t.section === 'morning') },
     { id: 'afternoon', title: 'Afternoon task', tasks: state.journeyTasks.filter((t) => t.section === 'afternoon') },

@@ -4,7 +4,7 @@
 export const CONTENT = {
   // App
   APP: {
-    name: 'Mental Health',
+    name: 'Mindeased',
   },
 
   // Onboarding
