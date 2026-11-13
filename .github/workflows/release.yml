@@ -32,6 +32,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Bump version code
+        run: |
+          node -e "const fs=require('fs');const p='app.json';const j=JSON.parse(fs.readFileSync(p));j.expo.android.versionCode=Number(process.env.GITHUB_RUN_NUMBER)+1;fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -59,6 +63,10 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+
+      - name: Bump build number
+        run: |
+          node -e "const fs=require('fs');const p='app.json';const j=JSON.parse(fs.readFileSync(p));j.expo.ios.buildNumber=String(Number(process.env.GITHUB_RUN_NUMBER)+1);fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n');"
 
       - uses: actions/setup-node@v4
         with:
