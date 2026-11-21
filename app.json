@@ -49,7 +49,7 @@
     "experiments": {
       "typedRoutes": true
     },
-    "owner": "shipblueprint",
+    "owner": "shipschematic",
     "extra": {
       "eas": {
         "projectId": "8f6f470c-3882-416a-9d4f-036b2914cd19"
