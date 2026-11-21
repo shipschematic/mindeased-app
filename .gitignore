@@ -5,6 +5,10 @@ node_modules/
 .expo/
 dist/
 web-build/
+build/
+
+# Local backups
+*.bak
 
 # Firebase
 .firebase/
